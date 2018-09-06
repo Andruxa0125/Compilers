@@ -1,0 +1,49 @@
+- Things to work on
+
+    - Andrey
+        - Modify JavaScanner.java
+            - Modify extractToken() so that it has the java specific logic
+            - Note: when checking for identifier, add logic for underscore
+            - Note: we don't need to change the logic for EOF. The scanner works with the same logic.
+        - Add JavaCharToken.java and implement it
+
+    - Brian
+        - Modify JavaTokenType.java
+            - Note: Java is case sensitive
+        - Modify JavaStringToken.java -> Brian
+            - Change from single quotes to double quotes
+            - Note: For escape characters within a string (such as /n and /t), show the output as value.
+                e.g. "aa/taa"  --> text="aa/taa", value="aa   aa"
+                     "aa/naa"  --> text="aa/naa", value="aa
+                                                         aa"
+
+    - Izzy
+        - Modify JavaSpecialSymbolToken.java
+        - Modify JavaScanner.java for comments
+            - Note: skipWhiteSpace() actually handles with comments as well
+                - rename the method
+                - should handle with /* comments */
+                - should handle with // comments
+                - Note: the given code already handle the end of line and it works with the Java code too
+                - Note: assume there isn't any nested comments. So don't worry about handling with nested comments
+
+    - Steve
+        - Modify JavaWordToken.java (which is basically identifier tokens)
+            - Modify the reserved word tokens
+            - Rename the file to JavaIdentifierToken.java
+            - Note: word contains letters, digits, and underscores(_)
+        - Try to identify any more work needed for the assignment (we might be missing something)
+
+- Note
+
+    - This assignment is tested and graded based on the given input file "javatest.in" only. We do not need to worry
+    about handling additional cases. (e.g. nested comments)
+
+
+
+
+
+
+
+
+
