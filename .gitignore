@@ -18,3 +18,5 @@
 
 # Intellij
 .idea/
+*.iml
+*.iws
