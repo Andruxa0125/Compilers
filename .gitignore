@@ -1,6 +1,5 @@
 # Compiled class file
 *.class
-
 # Log file
 *.log
 
@@ -21,3 +20,8 @@
 *.iml
 *.iws
 out/
+/bin/
+
+#Eclipse
+.classpath
+.project

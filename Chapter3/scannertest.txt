@@ -11,13 +11,11 @@ Hello world
 begin BEGIN Begin BeGiN begins
 
 {String tokens}
-'Hello, world.'
-'It''s Friday!'
-''
-' '' '' '   ''''''
-'This string
-spans
-source lines.'
+"Hello, world."
+"Hello,\tworld!"
+"Hello,\n\"world!\""
+"It's Friday!"
+""  "\""
 
 {Special symbol tokens}
 + - * / := . , ; : = <> < <= >= > ( ) [ ] { } } ^ ..
