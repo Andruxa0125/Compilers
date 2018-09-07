@@ -4,6 +4,7 @@ import wci.frontend.*;
 import wci.frontend.java.tokens.*;
 
 import static wci.frontend.Source.EOF;
+import static wci.frontend.Source.EOL;
 import static wci.frontend.java.JavaErrorCode.*;
 
 /**
@@ -74,17 +75,43 @@ public class JavaScanner extends Scanner
     {
         char currentChar = currentChar();
 
-        while (Character.isWhitespace(currentChar) || (currentChar == '{')) {
+        while (Character.isWhitespace(currentChar) || (currentChar == '/')) {
 
             // Start of a comment?
-            if (currentChar == '{') {
-                do {
-                    currentChar = nextChar();  // consume comment characters
-                } while ((currentChar != '}') && (currentChar != EOF));
+            if (currentChar == '/') {
+                currentChar = nextChar();
 
-                // Found closing '}'?
-                if (currentChar == '}') {
-                    currentChar = nextChar();  // consume the '}'
+                // comment using /* */
+                if (currentChar == '*') {
+                    boolean isStillComment = true;
+                    currentChar = nextChar();
+                    do {
+                        while ((currentChar != '*') && (currentChar != EOF)) {
+                           currentChar = nextChar();
+                        }
+
+                        // Check closing '*' or non closing '*'?
+                        if (currentChar == '*') {
+
+                            currentChar = nextChar();  // consume the '*'
+                            if (currentChar == '/') {
+                                currentChar = nextChar();  // consume the '/' which means the end of comment
+                                isStillComment = false;
+                            }
+                        }
+                    }  while (isStillComment);
+                }
+
+                // comment using //
+                else if (currentChar == '/') {
+                    do {
+                        currentChar = nextChar();
+                    } while ((currentChar != EOL) && (currentChar != EOF));
+
+                    // Found EOL?
+                    if (currentChar == EOL) {
+                        currentChar = nextChar(); // consume EOL and go to the next line
+                    }
                 }
             }
 
