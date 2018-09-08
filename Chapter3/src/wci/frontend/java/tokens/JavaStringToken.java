@@ -99,11 +99,17 @@ public class JavaStringToken extends JavaToken
     	//gets the 2nd character and returns the literal escape character; if not found, then returns @ 
     	switch(input) {
     	case '\"' : value = '\"';
+    				break;
     	case 't'  : value = '\t';
+    				break;
     	case 'n'  : value = '\n';
+    				break;
     	case '\'' : value = '\'';
+    				break;
     	case '\\' : value = '\\';
+    				break;
     	default   : value = '@';
+    				break;
     	}
     	return value;	
     	
