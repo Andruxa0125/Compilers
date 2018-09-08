@@ -49,7 +49,7 @@ public class JavaStringToken extends JavaToken
                 currentChar = ' ';
             }
 
-            if ((currentChar != '\"') && (currentChar != EOF)) {
+            if ((currentChar != '\"') && (currentChar != EOF) && (currentChar != '\\')) {
                 textBuffer.append(currentChar);
                 valueBuffer.append(currentChar);
                 currentChar = nextChar();  // consume character
