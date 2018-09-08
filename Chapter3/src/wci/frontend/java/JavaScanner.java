@@ -36,7 +36,7 @@ public class JavaScanner extends Scanner
     {
         skipWhiteSpace();
 
-        Token token;
+        Token token = null;
         char currentChar = currentChar();
 
         // Construct the next token.  The current character determines the
@@ -44,15 +44,23 @@ public class JavaScanner extends Scanner
         if (currentChar == EOF) {
             token = new EofToken(source);
         }
-        else if (Character.isLetter(currentChar)) {
+        else if (Character.isLetter(currentChar) ||
+        		 currentChar == '_') {
             token = new JavaWordToken(source);
+            /* TODO: Replace the line above with 
+             * the line below once the changes to JavaWordToken are made. */
+            // token = new JavaIdentifierToken(source);
         }
         else if (Character.isDigit(currentChar)) {
             token = new JavaNumberToken(source);
         }
-        else if (currentChar == '\"') {
+        else if (currentChar == '"') {
             token = new JavaStringToken(source);
         }
+//        else if (currentChar == '\'') {
+//        	 /* TODO: Create a char token. */
+//        	//token = new JavaCharToken(source);
+//        }
         else if (JavaTokenType.SPECIAL_SYMBOLS
                  .containsKey(Character.toString(currentChar))) {
             token = new JavaSpecialSymbolToken(source);
