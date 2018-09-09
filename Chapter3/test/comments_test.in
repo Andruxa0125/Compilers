@@ -1,0 +1,12 @@
+/* All lines in this file are valid comments */
+// CS 153
+/* Here's a comment
+that spans several
+source lines. */
+/*comments in*//***a row***/
+/* This is /* not a nested comment. */
+// Nor is /* this */ one.
+/********helloworld****************/
+///////******//
+/*/*/
+/*//*/
