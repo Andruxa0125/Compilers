@@ -36,6 +36,34 @@ public class JavaToken extends Token
 	/* Actual set used in JavaCharToken and JavaStringToken. */
 	protected static final HashSet<Character> escapeCharacters = 
 											  createEscapeCharsHashSet();
+	
+    /* Method that returns a character based on the string for escape character.
+     * If not found, returns @. We should never return that. */
+	protected static char getCorrectChar(char escapeChar)
+	{
+		Character value;
+		switch(escapeChar) {
+    	case '\"' : value = '\"';
+    				break;
+    	case 't'  : value = '\t';
+    				break;
+    	case 'n'  : value = '\n';
+    				break;
+    	case '\'' : value = '\'';
+    				break;
+    	case '\\' : value = '\\';
+    				break;
+    	case 'f' : value = '\f';
+					break;
+    	case 'r' : value = '\r';
+					break;
+    	case 'b' : value = '\b';
+					break;
+    	default   : value = '@';
+    				break;
+		}
+		return value;	
+	}
     protected JavaToken(Source source)
         throws Exception
     {

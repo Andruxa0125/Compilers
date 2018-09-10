@@ -57,10 +57,9 @@ public class JavaScanner extends Scanner
         else if (currentChar == '"') {
             token = new JavaStringToken(source);
         }
-//        else if (currentChar == '\'') {
-//        	 /* TODO: Create a char token. */
-//        	//token = new JavaCharToken(source);
-//        }
+        else if (currentChar == '\'') {
+        	token = new JavaCharToken(source);
+        }
         else if (JavaTokenType.SPECIAL_SYMBOLS
                  .containsKey(Character.toString(currentChar))) {
             token = new JavaSpecialSymbolToken(source);
