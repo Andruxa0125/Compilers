@@ -13,14 +13,14 @@ import static wci.frontend.java.JavaTokenType.*;
  * <p>Copyright (c) 2009 by Ronald Mak</p>
  * <p>For instructional purposes only.  No warranties.</p>
  */
-public class JavaWordToken extends JavaToken
+public class JavaIdentifierToken extends JavaToken
 {
     /**
      * Constructor.
      * @param source the source from where to fetch the token's characters.
      * @throws Exception if an error occurred.
      */
-    public JavaWordToken(Source source)
+    public JavaIdentifierToken(Source source)
         throws Exception
     {
         super(source);

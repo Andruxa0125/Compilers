@@ -46,7 +46,7 @@ public class JavaScanner extends Scanner
         }
         else if (Character.isLetter(currentChar) ||
         		 currentChar == '_') {
-            token = new JavaWordToken(source);
+            token = new JavaIdentifierToken(source);
             /* TODO: Replace the line above with 
              * the line below once the changes to JavaWordToken are made. */
             // token = new JavaIdentifierToken(source);
