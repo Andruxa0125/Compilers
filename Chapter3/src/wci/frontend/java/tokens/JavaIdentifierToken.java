@@ -47,11 +47,11 @@ public class JavaIdentifierToken extends JavaToken
 
         // Case sensitivity check
         // Check if all chars are lowercase in text
-        boolean isLowercase = text.equals(text.toLowerCase());
-
+        boolean isLowerCase = text.equals(text.toLowerCase());
+        
         // Is it a reserved word or an identifier?
-        if (isLowercase) {
-            type = (RESERVED_WORDS.contains(text.toUpperCase()))
+        if (isLowerCase) {
+            type = (RESERVED_WORDS.contains(text))
                     ? JavaTokenType.valueOf(text.toUpperCase())  // reserved word
                     : IDENTIFIER; // identifier
         } else {

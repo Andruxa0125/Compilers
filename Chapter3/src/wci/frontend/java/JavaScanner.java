@@ -47,14 +47,11 @@ public class JavaScanner extends Scanner
         else if (Character.isLetter(currentChar) ||
         		 currentChar == '_') {
             token = new JavaIdentifierToken(source);
-            /* TODO: Replace the line above with 
-             * the line below once the changes to JavaWordToken are made. */
-            // token = new JavaIdentifierToken(source);
         }
         else if (Character.isDigit(currentChar)) {
             token = new JavaNumberToken(source);
         }
-        else if (currentChar == '"') {
+        else if (currentChar == '\"') {
             token = new JavaStringToken(source);
         }
         else if (currentChar == '\'') {

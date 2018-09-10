@@ -20,7 +20,9 @@ public class JavaToken extends Token
      * @throws Exception if an error occurred.
      */
 	
-	/* Method that creates a set with all characters that should be escaped. */
+	/* Method that creates a set with all characters that should be escaped. 
+	 * The resource used for escape characters for a char:
+     * https://docs.oracle.com/javase/tutorial/java/data/characters.html */
 	public static HashSet<Character> createEscapeCharsHashSet() {
 	    HashSet<Character> set = new HashSet<Character>();
 	    set.add('\''); //single quote
@@ -38,7 +40,7 @@ public class JavaToken extends Token
 											  createEscapeCharsHashSet();
 	
     /* Method that returns a character based on the string for escape character.
-     * If not found, returns @. We should never return that. */
+     * If not found, returns @. We should never return that.  */
 	protected static char getCorrectChar(char escapeChar)
 	{
 		Character value;
