@@ -12,31 +12,43 @@ import wci.frontend.TokenType;
  *
  * <p>Copyright (c) 2009 by Ronald Mak</p>
  * <p>For instructional purposes only.  No warranties.</p>
+ * <p>Modified by Brian Tan</p>
  */
 public enum JavaTokenType implements TokenType
 {
     // Reserved words.
-    AND, ARRAY, BEGIN, CASE, CONST, DIV, DO, DOWNTO, ELSE, END,
-    FILE, FOR, FUNCTION, GOTO, IF, IN, LABEL, MOD, NIL, NOT,
-    OF, OR, PACKED, PROCEDURE, PROGRAM, RECORD, REPEAT, SET,
-    THEN, TO, TYPE, UNTIL, VAR, WHILE, WITH, CHAR, 
+
+    ABSTRACT, BREAK, CASE, CHAR, CLASS, CONST, CONTINUE, DO, 
+    DOUBLE, ELSE, ENUM, EXTENDS, FLOAT, FOR, GOTO, IF, 
+    INT, LONG, NATIVE, RETURN, SHORT, PACKAGE, PROTECTED, STATIC, 
+    SUPER, SWITCH, THIS, THROW, VOID, VOLATILE, WHILE,
+
 
     // Special symbols.
-    PLUS("+"), MINUS("-"), STAR("*"), SLASH("/"), COLON_EQUALS(":="),
-    DOT("."), COMMA(","), SEMICOLON(";"), COLON(":"), QUOTE("'"),
-    EQUALS("="), NOT_EQUALS("<>"), LESS_THAN("<"), LESS_EQUALS("<="),
-    GREATER_EQUALS(">="), GREATER_THAN(">"), LEFT_PAREN("("), RIGHT_PAREN(")"),
-    LEFT_BRACKET("["), RIGHT_BRACKET("]"), LEFT_BRACE("{"), RIGHT_BRACE("}"),
-    UP_ARROW("^"), DOT_DOT(".."),
+    TILDE("~"), NOT("!"), AT_SIGN("@"), PERCENT("%"), UP_ARROW("^"), 
+    AND_SIGN("&"), STAR("*"), MINUS("-"), PLUS("+"), EQUALS("="), 
+    VERT_BAR("|"), SLASH("/"), COLON(":"), SEMICOLON(";"), QUESTION_MARK("?"), 
+    LESS_THAN("<"), GREATER_THAN(">"), DOT("."), COMMA(","), QUOTE("'"), 
+    DOUBLE_QUOTE("\""), LEFT_PAREN("("), RIGHT_PAREN(")"), LEFT_BRACKET("["), 
+    RIGHT_BRACKET("]"), LEFT_BRACE("{"), RIGHT_BRACE("}"), PLUS_PLUS("++"), 
+    MINUS_MINUS("--"), SHIFT_LEFT("<<"), SHIFT_RIGHT(">>"), LESS_EQUALS("<="), 
+    GREATER_EQUALS(">="), PLUS_EQUALS("+="), MINUS_EQUALS("-="), 
+    STAR_EQUALS("*="),SLASH_EQUALS("/="), EQUAL_EQUALS("=="), BAR_EQUALS("|="),
+    PERCENT_EQUALS("%="),AND_EQUALS("&="), UP_EQUALS("^="), NOT_EQUALS("!="),
+    SHIFT_LEFT_EQUALS("<<="), SHIFT_RIGHT_EQUALS(">>="), OR("||"), 
+    AND("&&"), SLASH_SLASH("//"), SLASH_STAR("/*"), STAR_SLASH("*/"),
+      
+     
+
 
     IDENTIFIER, INTEGER, REAL, STRING,
     ERROR, END_OF_FILE;
 
-    private static final int FIRST_RESERVED_INDEX = AND.ordinal();
-    private static final int LAST_RESERVED_INDEX  = WITH.ordinal();
+    private static final int FIRST_RESERVED_INDEX = ABSTRACT.ordinal();
+    private static final int LAST_RESERVED_INDEX  = WHILE.ordinal();
 
-    private static final int FIRST_SPECIAL_INDEX = PLUS.ordinal();
-    private static final int LAST_SPECIAL_INDEX  = DOT_DOT.ordinal();
+    private static final int FIRST_SPECIAL_INDEX = TILDE.ordinal();
+    private static final int LAST_SPECIAL_INDEX  = STAR_SLASH.ordinal();
 
     private String text;  // token text
 
