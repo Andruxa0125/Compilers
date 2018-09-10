@@ -71,7 +71,14 @@ public class JavaCharToken extends JavaToken
                     currentChar = advanceTillEnd(textBuffer, currentChar);
                     break;
             	}
-            	
+            	// this character should have been escaped
+            	if(currentChar == '\"')
+            	{
+            		type = ERROR;
+                    value = NOT_ESCAPED_CHAR;
+                    currentChar = advanceTillEnd(textBuffer, currentChar);
+                    break;
+            	}
                 textBuffer.append(currentChar);
                 valueBuffer.append(currentChar);
                 currentChar = nextChar();  // consume character

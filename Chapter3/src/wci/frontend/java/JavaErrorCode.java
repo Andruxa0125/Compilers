@@ -56,6 +56,7 @@ public enum JavaErrorCode
     MISSING_UNTIL("Missing UNTIL"),
     MISSING_VARIABLE("Missing variable"),
     NOT_CONSTANT_IDENTIFIER("Not a constant identifier"),
+    NOT_ESCAPED_CHAR("You haven't escaped a character."),
     NOT_RECORD_VARIABLE("Not a record variable"),
     NOT_TYPE_IDENTIFIER("Not a type identifier"),
     RANGE_INTEGER("Integer literal out of range"),
