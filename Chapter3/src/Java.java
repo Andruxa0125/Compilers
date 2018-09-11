@@ -172,9 +172,9 @@ public class Java
                                                      position,
                                                      tokenText));
                     if (tokenValue != null) {
-                        if (tokenType == STRING) {
-                            tokenValue = "\"" + tokenValue + "\"";
-                        }
+//                        if (tokenType == STRING) {
+//                            tokenValue = "\"" + tokenValue + "\"";
+//                        }
 
                         System.out.println(String.format(VALUE_FORMAT,
                                                          tokenValue));
