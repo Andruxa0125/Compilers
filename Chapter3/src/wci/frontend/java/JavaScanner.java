@@ -83,6 +83,9 @@ public class JavaScanner extends Scanner
 
             // Start of a comment?
             if (currentChar == '/') {
+                if (source.peekChar() == ' ') {
+                    break;
+                }
                 currentChar = nextChar();
 
                 // comment using /* */
