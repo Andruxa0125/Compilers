@@ -1,0 +1,30 @@
+// Valid reserved word tokens
+
+abstract double int super
+break else long switch
+case enum native super
+char extends return this
+class float short throw
+const for package void
+continue goto protected volatile
+do if static while
+
+// Invalid reserved word tokens -> should become identifier
+ABSTRACT DOUBLE INT SUPER
+BREAK ELSE LONG SWITCH
+CASE ENUM NATIVE SUPER
+CHAR EXTENDS RETURN THIS
+CLASS FLOAT SHORT THROW
+CONST FOR PACKAGE VOID
+CONTINUE GOTO PROTECTED VOLATILE
+DO IF STATIC WHILE
+
+aBsTrAcT DoUbLe iNt sUpEr
+bReAk eLsE LoNg sWiTcH
+CaSe eNuM NaTiVe sUpEr
+cHaR ExTeNdS ReTuRn tHiS
+ClAsS FlOaT ShOrT ThRoW
+CoNsT FoR PaCkAgE VoId
+cOnTiNuE GoTo pRoTeCtEd vOlAtIlE
+Do iF StAtIc wHiLe
+
