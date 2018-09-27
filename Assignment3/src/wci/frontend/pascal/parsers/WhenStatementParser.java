@@ -30,14 +30,13 @@ public class WhenStatementParser extends StatementParser
     {
         super(parent);
     }
-    
-    /* TODO: This is something that we should work on. */
+
     // Synchronization set for THEN.
-    private static final EnumSet<PascalTokenType> THEN_SET =
+    private static final EnumSet<PascalTokenType> EQUALS_GREATER_SET =
         StatementParser.STMT_START_SET.clone();
     static {
-        THEN_SET.add(THEN);
-        THEN_SET.addAll(StatementParser.STMT_FOLLOW_SET);
+        EQUALS_GREATER_SET.add(EQUALS_GREATER);
+        EQUALS_GREATER_SET.addAll(StatementParser.STMT_FOLLOW_SET);
     }
 
     /**
@@ -62,52 +61,87 @@ public class WhenStatementParser extends StatementParser
 
         // Create an IF node. This is will be a root of the whole when statement.
         ICodeNode ifNode = ICodeFactory.createICodeNode(ICodeNodeTypeImpl.IF);
-        
-        /* We will need expression parser and statement parser to parse every line
-        *  expression=>statement;	
-        */
+
+        //We will need expression parser and statement parser to parse every line
+        //expression=>statement;
         ExpressionParser expressionParser = new ExpressionParser(this);
         StatementParser statementParser = new StatementParser(this);
         ICodeNode curNode = ifNode;
+
         // I think this should work. 
         // However, I need to look more if expressionParser and StatementParser will eventually get me to the new line.
-        while(token.getType() != OTHERWISE)
-        {
-        	
+
+        // Loop to parse each 'expression => statement;' until the OTHERWISE token
+        // or the end of the source file.
+        while (!(token instanceof EofToken) && (token.getType() != OTHERWISE)) {
+            // Parse the expression.
         	curNode.addChild(expressionParser.parse(token));
-        	// need to consume => here.
+
+            // Synchronize at =>
+            token = synchronize(EQUALS_GREATER_SET);
+            if (token.getType() == EQUALS_GREATER) {
+                token = nextToken();  // consume =>
+            }
+            else {
+                errorHandler.flag(token, MISSING_EQUALS_GREATER, this);
+            }
+
+            // Parse the statement.
         	curNode.addChild(statementParser.parse(token));
-        	// not sure if semicolon is consumed here.
-        	
-        	// if we have more conditions, then we need add the third child as IF
-        	// and start building the tree under that if.
-        	if(token.getType() != OTHERWISE)
-        			curNode = curNode.addChild(ICodeFactory.createICodeNode(ICodeNodeTypeImpl.IF));
+
+        	if(token.getType() != OTHERWISE) {
+                // Look for the semicolon after statement and before expression.
+                token = currentToken();
+                TokenType tokenType = token.getType();
+
+                // Look for the semicolon between CASE branches.
+                if (tokenType == SEMICOLON) {
+                    token = nextToken();  // consume the ;
+                }
+
+                // If at the start of the next constant, then missing a semicolon.
+                else if (EQUALS_GREATER_SET.contains(tokenType)) {
+                    errorHandler.flag(token, MISSING_SEMICOLON, this);
+                }
+
+                // if we have more conditions, then we need add the third child as IF
+                // and start building the tree under that if.
+                curNode = curNode.addChild(ICodeFactory.createICodeNode(ICodeNodeTypeImpl.IF));
+            }
         }
+
         
         /* Means that this token type is OTHERWISE.
          * By now, the current node should have at least 2 children.
          * Whatever is followed by otherwise should become the 3 child.	
          */
-        token = nextToken();  // consume OTHERWISE
-        // need to consume => here.
+        // Look for the OTHERWISE token.
+        if (token.getType() == OTHERWISE) {
+            token = nextToken();  // consume OTHERWISE
+        }
+        else {
+            errorHandler.flag(token, MISSING_OTHERWISE, this);
+        }
+
+        // Synchronize at =>
+        token = synchronize(EQUALS_GREATER_SET);
+        if (token.getType() == EQUALS_GREATER) {
+            token = nextToken();  // consume =>
+        }
+        else {
+            errorHandler.flag(token, MISSING_EQUALS_GREATER, this);
+        }
+
         // the curNode should have only 2 children now.
         curNode.addChild(statementParser.parse(token));
-        //need to consume the END here.
-        
-        
-        
-        // TODO: Looks like here there should a synchronization on =>
-        // I haven't looked too closely at synchronization and why we need it.
-        // Synchronize at the THEN.
-        
-//        token = synchronize(THEN_SET);
-//        if (token.getType() == THEN) {
-//            token = nextToken();  // consume the THEN
-//        }
-//        else {
-//            errorHandler.flag(token, MISSING_THEN, this);
-//        }
+
+        // Look for the END token.
+        if (token.getType() == END) {
+            token = nextToken();  // consume END
+        }
+        else {
+            errorHandler.flag(token, MISSING_END, this);
+        }
 
         return ifNode;
     }
