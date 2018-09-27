@@ -135,6 +135,7 @@ public class WhenStatementParser extends StatementParser
         // the curNode should have only 2 children now.
         curNode.addChild(statementParser.parse(token));
 
+        token = currentToken();
         // Look for the END token.
         if (token.getType() == END) {
             token = nextToken();  // consume END
