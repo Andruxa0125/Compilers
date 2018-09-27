@@ -106,7 +106,8 @@ public class WhenStatementParser extends StatementParser
 
             // TODO Check whether token is END ---> missing OTHERWISE
             if (token.getType() == END) {
-
+            	errorHandler.flag(token, MISSING_OTHERWISE, this);
+            	break;
             }
 
             // if we have more conditions, then we need add the third child as IF
