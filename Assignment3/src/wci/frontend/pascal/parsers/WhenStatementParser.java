@@ -88,24 +88,30 @@ public class WhenStatementParser extends StatementParser
 
             // Parse the statement.
         	curNode.addChild(statementParser.parse(token));
+            // synchronize on ; between the statements.
 
-        	if(token.getType() != OTHERWISE) {
-                // Look for the semicolon after statement and before expression.
-                token = currentToken();
-                TokenType tokenType = token.getType();
+            // Look for the semicolon after statement and before expression.
+            token = currentToken();
+            TokenType tokenType = token.getType();
 
-                // Look for the semicolon between CASE branches.
-                if (tokenType == SEMICOLON) {
-                    token = nextToken();  // consume the ;
-                }
+            // Look for the semicolon between CASE branches.
+            if (tokenType == SEMICOLON) {
+                token = nextToken();  // consume the ;
+            }
 
-                // If at the start of the next constant, then missing a semicolon.
-                else if (EQUALS_GREATER_SET.contains(tokenType)) {
-                    errorHandler.flag(token, MISSING_SEMICOLON, this);
-                }
+            // If at the start of the next constant, then missing a semicolon.
+            else if (EQUALS_GREATER_SET.contains(tokenType)) {
+                errorHandler.flag(token, MISSING_SEMICOLON, this);
+            }
 
-                // if we have more conditions, then we need add the third child as IF
-                // and start building the tree under that if.
+            // TODO Check whether token is END ---> missing OTHERWISE
+            if (token.getType() == END) {
+
+            }
+
+            // if we have more conditions, then we need add the third child as IF
+            // and start building the tree under that if.
+            if (token.getType() != OTHERWISE) {
                 curNode = curNode.addChild(ICodeFactory.createICodeNode(ICodeNodeTypeImpl.IF));
             }
         }

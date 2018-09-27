@@ -1,0 +1,9 @@
+BEGIN
+    i := 1;
+
+    WHEN
+        i = 1 => f := 10;
+        i = 2 => f := 20;
+        OTHERWISE => f := -1
+    END;
+END.
