@@ -104,7 +104,6 @@ public class WhenStatementParser extends StatementParser
                 errorHandler.flag(token, MISSING_SEMICOLON, this);
             }
 
-            // TODO Check whether token is END ---> missing OTHERWISE
             if (token.getType() == END) {
             	errorHandler.flag(token, MISSING_OTHERWISE, this);
             	break;
@@ -122,12 +121,8 @@ public class WhenStatementParser extends StatementParser
          * By now, the current node should have at least 2 children.
          * Whatever is followed by otherwise should become the 3 child.	
          */
-        // Look for the OTHERWISE token.
         if (token.getType() == OTHERWISE) {
             token = nextToken();  // consume OTHERWISE
-        }
-        else {
-            errorHandler.flag(token, MISSING_OTHERWISE, this);
         }
 
         // Synchronize at =>
