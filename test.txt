@@ -1,1 +1,1 @@
-Testing Github Slack config
+Testing Github Slack configuration
