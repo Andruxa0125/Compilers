@@ -26,6 +26,7 @@ public class Predefined
     public static TypeSpec booleanType;
     public static TypeSpec charType;
     public static TypeSpec undefinedType;
+    public static TypeSpec complexType;
 
     // Predefined identifiers.
     public static SymTabEntry integerId;
@@ -34,6 +35,9 @@ public class Predefined
     public static SymTabEntry charId;
     public static SymTabEntry falseId;
     public static SymTabEntry trueId;
+    public static SymTabEntry complexId;
+    public static SymTabEntry cImaginaryId;
+    public static SymTabEntry cRealId;
 
     /**
      * Initialize a symbol table stack with predefined identifiers.
@@ -79,6 +83,24 @@ public class Predefined
         charId.setDefinition(DefinitionImpl.TYPE);
         charId.setTypeSpec(charType);
 
+        //Type complex
+        complexId = symTabStack.enterLocal("complex");
+        complexType = TypeFactory.createType(RECORD);
+        complexType.setIdentifier(complexId);
+        complexId.setDefinition(DefinitionImpl.TYPE);
+        complexId.setTypeSpec(complexType);
+        complexType.setAttribute(RECORD_SYMTAB, symTabStack.push());
+        
+        cRealId = symTabStack.enterLocal("re");
+        cRealId.setDefinition(DefinitionImpl.FIELD);
+        cRealId.setTypeSpec(realType);
+        
+        cImaginaryId = symTabStack.enterLocal("im");
+        cImaginaryId.setDefinition(DefinitionImpl.FIELD);
+        cImaginaryId.setTypeSpec(realType);
+        
+        symTabStack.pop();
+        
         // Undefined type.
         undefinedType = TypeFactory.createType(SCALAR);
     }
