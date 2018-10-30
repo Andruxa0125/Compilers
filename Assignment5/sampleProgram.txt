@@ -1,0 +1,26 @@
+func int ourFunction(int a, int& b)
+{
+    b = b * 3;
+    int temp = a + b;
+    return temp;
+} 
+
+int a = 5;
+int b = 15;
+int c = a + b;
+string str = "bla";
+ourFunction(1, b);
+
+if(a > 4)
+{
+    c = c * 5;
+}
+else
+{
+    b = b+10;
+}
+
+while(b > 10) {
+    a = a + 1;
+    b = b - 1;
+}
