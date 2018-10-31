@@ -3,21 +3,21 @@ grammar Expr;
 /** The start rule; begin parsing here. */
 prog:   stat+ ; 
 
-stat:   expr NEWLINE                
-    |   ID '=' expr NEWLINE
+stat:   expr NEWLINE                    # expr and Newline
+    |   ID '=' expr NEWLINE             # assignment
     |   WHILE '(' expr ')' block        # While
-    |   NEWLINE                   
+    |   NEWLINE                         # Newline
     ;
 
-expr:   expr ('*'|'/'|'%') expr   
-    |   expr ('+'|'-') expr
+expr:   expr ('*'|'/'|'%') expr                           # Multiplication, Division, Module
+    |   expr ('+'|'-') expr                               # Additiona and subtraction
     |   expr op=( '>' | '<' | '<=' | '>=' | '==' ) expr   # ComparingExpr
     |   FUNCTION '(' param ')' block                      # FunctionDeclaration
     |   expr '(' arguments ')'                            # FunctionCall
 	|   ID ASSIGN expr                                    # Assign     //you want to use this Izzy?
-    |   INT                    
-    |   ID                    
-    |   '(' expr ')'         
+    |   INT                                               # Integer value
+    |   ID                                                # Id
+    |   '(' expr ')'                                      # expr in brackets
     ;
 
 /** Literals */
