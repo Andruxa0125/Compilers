@@ -4,10 +4,17 @@ grammar Expr;
 prog:   stat+ ; 
 
 stat:   expr NEWLINE                    // expr and Newline
-    |   ID '=' expr NEWLINE             // assignment
+    |   assignment_statement NEWLINE    // assignment statement
     |   WHILE '(' expr ')' block        // While
     |   NEWLINE                         // Newline
     ;
+
+assignment_statement : type variable '=' expr SEMICOLON;
+
+type : INT_TYPE
+	 | STRING_TYPE ;
+
+variable : IDENTIFIER ;
 
 expr:   expr ('*'|'/'|'%') expr                           // Multiplication, Division, Module
     |   expr ('+'|'-') expr                               // Additiona and subtraction
@@ -15,12 +22,16 @@ expr:   expr ('*'|'/'|'%') expr                           // Multiplication, Div
     |   FUNCTION '(' param ')' block                      // FunctionDeclaration
     |   expr '(' arguments ')'                            // FunctionCall
     |   INT                                               // Integer value
-    |   ID                                                // Id
+    |   IDENTIFIER                                                // Id
     |   '(' expr ')'                                      // expr in brackets
     ;
 
+/** Type */
+INT_TYPE : 'int' ;
+STRING_TYPE : 'string' ;
+
 /** Literals */
-ID          : [a-zA-Z]+ ;             // match identifiers <label id="code.tour.expr.3"/>
+IDENTIFIER          : [a-zA-Z]+ ;             // match identifiers <label id="code.tour.expr.3"/>
 INT         : [0-9]+ ;                // match integers
 NEWLINE     : '\r'? '\n' ;            // return newlines to parser (is end-statement signal)
 WS          : [ \t]+ -> skip ;        // toss out whitespace
@@ -42,10 +53,10 @@ ASSIGN      : '=' ;
 GE          : '>=' ;
 LE          : '<=' ;
 EQ          : '==' ;
-SEPARATOR   : ';' ;                 // We agreed on using semicolon at the end right?
+SEMICOLON   : ';' ;                 // We agreed on using semicolon at the end right?
                                     // if no, get rid of this line.
                                 
-param: (ID)? (',' ID)*              // function parameters
+param: (IDENTIFIER)? (',' IDENTIFIER)*              // function parameters
     ;
 
 arguments: (expr)? (',' expr)*      // function arguments
