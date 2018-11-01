@@ -1,26 +1,44 @@
-func int ourFunction(int a, int& b)
-{
-    b = b * 3;
-    int temp = a + b;
-    return temp;
-} 
+// expressions with numeric constants and scalar variables
+123;
+1 + 2 + 3;
 
+// Assignment statements
 int a = 5;
 int b = 15;
 int c = a + b;
-string str = "bla";
-ourFunction(1, b);
+string str1 = "bla";
 
-if(a > 4)
+// Conditional statements (at least one)
+if (a > 4)
 {
     c = c * 5;
 }
 else
 {
-    b = b+10;
+    b = b + 10;
 }
 
+// Looping statements (at least one)
 while(b > 10) {
     a = a + 1;
     b = b - 1;
 }
+
+// Variable declarations (at least two datatypes)
+int d;
+string str2;
+
+// Procedure and function declarations with value or reference parameters
+func int ourFunction(int a, int& b)
+{
+    b = b * 3;
+    int temp = a + b;
+    return temp;
+}
+
+// Procedure and function calls
+ourFunction(1, b);
+print("Halloween");
+
+
+
