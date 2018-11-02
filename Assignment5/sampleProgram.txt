@@ -6,7 +6,8 @@
 int a = 5;
 int b = 15;
 int c = a + b;
-string str1 = "bla";
+string str = "bla";
+c = 0;
 
 // Conditional statements (at least one)
 if (a > 4)
@@ -26,7 +27,8 @@ while(b > 10) {
 
 // Variable declarations (at least two datatypes)
 int d;
-string str2;
+string mstr;
+mstr = "hello";
 
 // Procedure and function declarations with value or reference parameters
 func int ourFunction(int a, int& b)
@@ -36,10 +38,13 @@ func int ourFunction(int a, int& b)
     return temp;
 }
 
+func ourProcedure()
+{
+	123;
+}
+
+
 // Procedure and function calls
-ourFunction(1, b);
-print("Halloween");
-
-
-
+int e = ourFunction(1, b);
+ourProcedure();
 
