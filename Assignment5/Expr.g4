@@ -65,31 +65,15 @@ STRING_TYPE : 'string' ;
 INT_TYPE_REF : 'int&' ;
 STRING_TYPE_REF : 'string&' ;
 
-/** Reserved words */
 IF          : 'if' ;
 ELSE		: 'else';
 FUNCTION    : 'func' ;
 WHILE       : 'while' ;
 RETURN      : 'return' ;
 
-/** Literals */
 IDENTIFIER  : [a-zA-Z]+;             // match identifiers <label id="code.tour.expr.3"/>
 INT_LITERAL :   [0-9]+ ;
 STRING_LITERAL : '"'[a-zA-Z0-9]*'"';
 NEWLINE     : '\r'? '\n' ;            // return newlines to parser (is end-statement signal)
 WS          : [ \t]+ -> skip ;        // toss out whitespace
-
-
-/** Symbols */
-MUL         : '*' ;
-DIV         : '/' ;
-MOD         : '%' ;
-ADD         : '+' ;
-SUB         : '-' ;
-GT          : '>' ;
-LT          : '<' ;
-ASSIGN      : '=' ;
-GE          : '>=' ;
-LE          : '<=' ;
-EQ          : '==' ;
 SEMICOLON   : ';' ;
