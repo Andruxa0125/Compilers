@@ -9,7 +9,7 @@ import wci.util.*;
 import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
 import static wci.intermediate.symtabimpl.DefinitionImpl.*;
 
-public class Pass1Visitor extends Pcl2BaseVisitor<Integer> 
+public class Pass1Visitor extends FantasticBaseVisitor<Integer>
 {
     private SymTabStack symTabStack;
     private SymTabEntry programId;
@@ -24,223 +24,165 @@ public class Pass1Visitor extends Pcl2BaseVisitor<Integer>
     }
     
     public PrintWriter getAssemblyFile() { return jFile; }
-    
-    @Override 
-    public Integer visitProgram(Pcl2Parser.ProgramContext ctx) 
-    { 
-        Integer value = visitChildren(ctx); 
-        
-        // Print the cross-reference table.
-        CrossReferencer crossReferencer = new CrossReferencer();
-        crossReferencer.print(symTabStack);
-        
-        return value;
-    }
-    
-    @Override 
-    public Integer visitHeader(Pcl2Parser.HeaderContext ctx) 
-    { 
-        String programName = ctx.IDENTIFIER().toString();
-        
-        programId = symTabStack.enterLocal(programName);
-        programId.setDefinition(DefinitionImpl.PROGRAM);
-        programId.setAttribute(ROUTINE_SYMTAB, symTabStack.push());
-        symTabStack.setProgramId(programId);
-        
-        // Create the assembly output file.
-        try {
-            jFile = new PrintWriter(new FileWriter(programName + ".j"));
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            return 0;
-        }
-        
-        // Emit the program header.
-        jFile.println(".class public " + programName);
-        jFile.println(".super java/lang/Object");
-        
-        // Emit the RunTimer and PascalTextIn fields.
-        jFile.println();
-        jFile.println(".field private static _runTimer LRunTimer;");
-        jFile.println(".field private static _standardIn LPascalTextIn;");
 
-        return visitChildren(ctx);
+    @Override
+    public Integer visitIfStat(FantasticParser.IfStatContext ctx) {
+        return super.visitIfStat(ctx);
     }
 
-    @Override 
-    public Integer visitDeclarations(Pcl2Parser.DeclarationsContext ctx) 
-    { 
-        Integer value = visitChildren(ctx); 
-        
-        // Emit the class constructor.
-        jFile.println();
-        jFile.println(".method public <init>()V");
-        jFile.println();
-        jFile.println("\taload_0");
-        jFile.println("\tinvokenonvirtual    java/lang/Object/<init>()V");
-        jFile.println("\treturn");
-        jFile.println();
-        jFile.println(".limit locals 1");
-        jFile.println(".limit stack 1");
-        jFile.println(".end method");
-        
-        return value;
+    // TODO: Need to override some of the following methods (refer to Pc2's Pass1Visitor)
+    @Override
+    public Integer visitPrintStat(FantasticParser.PrintStatContext ctx) {
+        return super.visitPrintStat(ctx);
     }
 
-    @Override 
-    public Integer visitDecl(Pcl2Parser.DeclContext ctx) 
-    { 
-        jFile.println("\n; " + ctx.getText() + "\n");
-        return visitChildren(ctx); 
+    @Override
+    public Integer visitVarDeclStat(FantasticParser.VarDeclStatContext ctx) {
+        return super.visitVarDeclStat(ctx);
     }
 
-    @Override 
-    public Integer visitVarList(Pcl2Parser.VarListContext ctx) 
-    { 
-        variableIdList = new ArrayList<SymTabEntry>();
-        return visitChildren(ctx);         
-    }
-    
-    @Override 
-    public Integer visitVarId(Pcl2Parser.VarIdContext ctx) 
-    {
-        String variableName = ctx.IDENTIFIER().toString();
-        
-        SymTabEntry variableId = symTabStack.enterLocal(variableName);
-        variableId.setDefinition(VARIABLE);
-        variableIdList.add(variableId);
-        
-        return visitChildren(ctx); 
-    }
-    
-    @Override 
-    public Integer visitTypeId(Pcl2Parser.TypeIdContext ctx) 
-    { 
-        String typeName = ctx.IDENTIFIER().toString();
-        
-        TypeSpec type;
-        String   typeIndicator;
-        
-        if (typeName.equalsIgnoreCase("integer")) {
-            type = Predefined.integerType;
-            typeIndicator = "I";
-        }
-        else if (typeName.equalsIgnoreCase("real")) {
-            type = Predefined.realType;
-            typeIndicator = "F";
-        }
-        else {
-            type = null;
-            typeIndicator = "?";
-        }
-                    
-        for (SymTabEntry id : variableIdList) {
-            id.setTypeSpec(type);
-            
-            // Emit a field declaration.
-            jFile.println(".field private static " +
-                               id.getName() + " " + typeIndicator);
-        }
-        
-        return visitChildren(ctx); 
+    @Override
+    public Integer visitFuncDeclStat(FantasticParser.FuncDeclStatContext ctx) {
+        return super.visitFuncDeclStat(ctx);
     }
 
-    @Override 
-    public Integer visitAddSubExpr(Pcl2Parser.AddSubExprContext ctx)
-    {
-        Integer value = visitChildren(ctx);
-        
-        TypeSpec type1 = ctx.expr(0).type;
-        TypeSpec type2 = ctx.expr(1).type;
-        
-        boolean integerMode =    (type1 == Predefined.integerType)
-                              && (type2 == Predefined.integerType);
-        boolean realMode    =    (type1 == Predefined.realType)
-                              && (type2 == Predefined.realType);
-        
-        TypeSpec type = integerMode ? Predefined.integerType
-                      : realMode    ? Predefined.realType
-                      :               null;
-        ctx.type = type;
-        
-        return value; 
+    @Override
+    public Integer visitAssignStat(FantasticParser.AssignStatContext ctx) {
+        return super.visitAssignStat(ctx);
     }
 
-    @Override 
-    public Integer visitMulDivExpr(Pcl2Parser.MulDivExprContext ctx)
-    {
-        Integer value = visitChildren(ctx);
-        
-        TypeSpec type1 = ctx.expr(0).type;
-        TypeSpec type2 = ctx.expr(1).type;
-        
-        boolean integerMode =    (type1 == Predefined.integerType)
-                              && (type2 == Predefined.integerType);
-        boolean realMode    =    (type1 == Predefined.realType)
-                              && (type2 == Predefined.realType);
-        
-        TypeSpec type = integerMode ? Predefined.integerType
-                      : realMode    ? Predefined.realType
-                      :               null;
-        ctx.type = type;
-        
-        return value; 
-    }
-    
-    @Override 
-    public Integer visitVariableExpr(Pcl2Parser.VariableExprContext ctx)
-    {
-        String variableName = ctx.variable().IDENTIFIER().toString();
-        SymTabEntry variableId = symTabStack.lookup(variableName);
-        
-        ctx.type = variableId.getTypeSpec();
-        return visitChildren(ctx); 
+    @Override
+    public Integer visitReturnStat(FantasticParser.ReturnStatContext ctx) {
+        return super.visitReturnStat(ctx);
     }
 
-    @Override 
-    public Integer visitSignedNumberExpr(Pcl2Parser.SignedNumberExprContext ctx)
-    {
-        Integer value = visitChildren(ctx);
-        ctx.type = ctx.signedNumber().type;
-        return value;
+    @Override
+    public Integer visitWhileStat(FantasticParser.WhileStatContext ctx) {
+        return super.visitWhileStat(ctx);
     }
 
-    @Override 
-    public Integer visitSignedNumber(Pcl2Parser.SignedNumberContext ctx)
-    {
-        Integer value = visit(ctx.number());
-        ctx.type = ctx.number().type;
-        return value;
+    @Override
+    public Integer visitNewLineStat(FantasticParser.NewLineStatContext ctx) {
+        return super.visitNewLineStat(ctx);
     }
 
-    @Override 
-    public Integer visitUnsignedNumberExpr(Pcl2Parser.UnsignedNumberExprContext ctx)
-    {
-        Integer value = visit(ctx.number());
-        ctx.type = ctx.number().type;
-        return value;
+    @Override
+    public Integer visitVar_decl_statement(FantasticParser.Var_decl_statementContext ctx) {
+        return super.visitVar_decl_statement(ctx);
     }
 
-    @Override 
-    public Integer visitIntegerConst(Pcl2Parser.IntegerConstContext ctx)
-    {
-        ctx.type = Predefined.integerType;
-        return visitChildren(ctx); 
+    @Override
+    public Integer visitFunc_decl_statement(FantasticParser.Func_decl_statementContext ctx) {
+        return super.visitFunc_decl_statement(ctx);
     }
 
-    @Override 
-    public Integer visitFloatConst(Pcl2Parser.FloatConstContext ctx)
-    {
-        ctx.type = Predefined.realType;
-        return visitChildren(ctx); 
+    @Override
+    public Integer visitDeclarationOver(FantasticParser.DeclarationOverContext ctx) {
+        return super.visitDeclarationOver(ctx);
     }
-    
-    @Override 
-    public Integer visitParenExpr(Pcl2Parser.ParenExprContext ctx)
-    {
-        Integer value = visitChildren(ctx); 
-        ctx.type = ctx.expr().type;
-        return value;
+
+    @Override
+    public Integer visitAssignmentOver(FantasticParser.AssignmentOverContext ctx) {
+        return super.visitAssignmentOver(ctx);
+    }
+
+    @Override
+    public Integer visitIf_statement(FantasticParser.If_statementContext ctx) {
+        return super.visitIf_statement(ctx);
+    }
+
+    @Override
+    public Integer visitReturn_statement(FantasticParser.Return_statementContext ctx) {
+        return super.visitReturn_statement(ctx);
+    }
+
+    @Override
+    public Integer visitType(FantasticParser.TypeContext ctx) {
+        return super.visitType(ctx);
+    }
+
+    @Override
+    public Integer visitReturn_type(FantasticParser.Return_typeContext ctx) {
+        return super.visitReturn_type(ctx);
+    }
+
+    @Override
+    public Integer visitFunction_name(FantasticParser.Function_nameContext ctx) {
+        return super.visitFunction_name(ctx);
+    }
+
+    @Override
+    public Integer visitRef_type(FantasticParser.Ref_typeContext ctx) {
+        return super.visitRef_type(ctx);
+    }
+
+    @Override
+    public Integer visitCompOpeOver(FantasticParser.CompOpeOverContext ctx) {
+        return super.visitCompOpeOver(ctx);
+    }
+
+    @Override
+    public Integer visitFuncCall(FantasticParser.FuncCallContext ctx) {
+        return super.visitFuncCall(ctx);
+    }
+
+    @Override
+    public Integer visitLit(FantasticParser.LitContext ctx) {
+        return super.visitLit(ctx);
+    }
+
+    @Override
+    public Integer visitVar(FantasticParser.VarContext ctx) {
+        return super.visitVar(ctx);
+    }
+
+    @Override
+    public Integer visitParens(FantasticParser.ParensContext ctx) {
+        return super.visitParens(ctx);
+    }
+
+    @Override
+    public Integer visitAddSubOver(FantasticParser.AddSubOverContext ctx) {
+        return super.visitAddSubOver(ctx);
+    }
+
+    @Override
+    public Integer visitMulDivPercOver(FantasticParser.MulDivPercOverContext ctx) {
+        return super.visitMulDivPercOver(ctx);
+    }
+
+    @Override
+    public Integer visitVariable(FantasticParser.VariableContext ctx) {
+        return super.visitVariable(ctx);
+    }
+
+    @Override
+    public Integer visitIntLitOver(FantasticParser.IntLitOverContext ctx) {
+        return super.visitIntLitOver(ctx);
+    }
+
+    @Override
+    public Integer visitStrLitOver(FantasticParser.StrLitOverContext ctx) {
+        return super.visitStrLitOver(ctx);
+    }
+
+    @Override
+    public Integer visitFunc_call(FantasticParser.Func_callContext ctx) {
+        return super.visitFunc_call(ctx);
+    }
+
+    @Override
+    public Integer visitParams(FantasticParser.ParamsContext ctx) {
+        return super.visitParams(ctx);
+    }
+
+    @Override
+    public Integer visitArgs(FantasticParser.ArgsContext ctx) {
+        return super.visitArgs(ctx);
+    }
+
+    @Override
+    public Integer visitBlock(FantasticParser.BlockContext ctx) {
+        return super.visitBlock(ctx);
     }
 }

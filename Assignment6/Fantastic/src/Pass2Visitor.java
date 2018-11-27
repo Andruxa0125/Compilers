@@ -3,7 +3,7 @@ import java.io.PrintWriter;
 import wci.intermediate.*;
 import wci.intermediate.symtabimpl.*;
 
-public class Pass2Visitor extends Pcl2BaseVisitor<Integer> 
+public class Pass2Visitor extends FantasticBaseVisitor<Integer>
 {
     String programName;
     private PrintWriter jFile;

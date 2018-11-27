@@ -1,4 +1,4 @@
-grammar Expr;
+grammar Fantastic;
 
 /** Parser rules */
 prog:   stat+ ; 
