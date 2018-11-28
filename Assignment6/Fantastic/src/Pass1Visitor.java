@@ -13,24 +13,51 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
 {
     private SymTabStack symTabStack;
     private SymTabEntry programId;
-    private ArrayList<SymTabEntry> variableIdList;
+    //private ArrayList<SymTabEntry> variableIdList;
     private PrintWriter jFile;
     
-    public Pass1Visitor()
+    public Pass1Visitor(String programName)
     {
         // Create and initialize the symbol table stack.
         symTabStack = SymTabFactory.createSymTabStack();
         Predefined.initialize(symTabStack);
+
+        // TODO: not sure if the following 4 lines are needed
+        programId = symTabStack.enterLocal(programName);
+        programId.setDefinition(DefinitionImpl.PROGRAM);
+        programId.setAttribute(ROUTINE_SYMTAB, symTabStack.push());
+        symTabStack.setProgramId(programId);
+
+        // Create the assembly output file.
+        try {
+            jFile = new PrintWriter(new FileWriter(programName + ".j"));
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        // Emit the program header.
+        jFile.println(".class public " + programName);
+        jFile.println(".super java/lang/Object");
+
+        // Emit the RunTimer and PascalTextIn fields.
+        jFile.println();
+        jFile.println(".field private static _runTimer LRunTimer;");
+        jFile.println(".field private static _standardIn LPascalTextIn;");
     }
     
     public PrintWriter getAssemblyFile() { return jFile; }
+
+
+    // TODO: Need to override some of the following methods (refer to Pc2's Pass1Visitor)
+
 
     @Override
     public Integer visitIfStat(FantasticParser.IfStatContext ctx) {
         return super.visitIfStat(ctx);
     }
 
-    // TODO: Need to override some of the following methods (refer to Pc2's Pass1Visitor)
+
     @Override
     public Integer visitPrintStat(FantasticParser.PrintStatContext ctx) {
         return super.visitPrintStat(ctx);
@@ -67,8 +94,38 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
     }
 
     @Override
+    // Note: Equivalent as visitVarDeclStat
     public Integer visitVar_decl_statement(FantasticParser.Var_decl_statementContext ctx) {
-        return super.visitVar_decl_statement(ctx);
+        jFile.println("\n; " + ctx.getText() + "\n");  // e.g. printing "; int a;" for a comment
+
+        // get variable name (identifier)
+        String varName = ctx.variable().getText();
+        System.out.println("varName: " + varName);
+        SymTabEntry variableId = symTabStack.enterLocal(varName);
+        variableId.setDefinition(VARIABLE);
+
+        // get type info
+        String typeName = ctx.type().getText(); // should be int or string for now
+        System.out.println("typeName: " + typeName);
+        TypeSpec type;
+        String   typeIndicator;
+
+        if (typeName.equalsIgnoreCase("int")) {
+            type = Predefined.integerType;
+            typeIndicator = "I";
+        }
+        else if (typeName.equalsIgnoreCase("string")) {
+            type = Predefined.stringType;
+            typeIndicator = "Ljava/lang/String;";
+        }
+        else { // TODO: figure out what we want to do here
+            type = null;
+            typeIndicator = "?";
+        }
+        System.out.println("typeIndicator: " + typeIndicator);
+        jFile.println(".field private static " + varName + " " + typeIndicator);
+
+        return visitChildren(ctx);
     }
 
     @Override
