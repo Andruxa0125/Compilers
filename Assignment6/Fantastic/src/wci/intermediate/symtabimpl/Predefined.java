@@ -27,6 +27,7 @@ public class Predefined
     public static TypeSpec realType;
     public static TypeSpec booleanType;
     public static TypeSpec charType;
+    public static TypeSpec stringType;
     public static TypeSpec undefinedType;
 
     // Predefined identifiers.
@@ -34,6 +35,7 @@ public class Predefined
     public static SymTabEntry realId;
     public static SymTabEntry booleanId;
     public static SymTabEntry charId;
+    public static SymTabEntry stringId;
     public static SymTabEntry falseId;
     public static SymTabEntry trueId;
     public static SymTabEntry readId;
@@ -102,6 +104,13 @@ public class Predefined
         charType.setIdentifier(charId);
         charId.setDefinition(DefinitionImpl.TYPE);
         charId.setTypeSpec(charType);
+
+        // Type string.
+        stringId = symTabStack.enterLocal("string");
+        stringType = TypeFactory.createType(SCALAR);
+        stringType.setIdentifier(stringId);
+        stringId.setDefinition(DefinitionImpl.TYPE);
+        stringId.setTypeSpec(stringType);
 
         // Undefined type.
         undefinedType = TypeFactory.createType(SCALAR);
