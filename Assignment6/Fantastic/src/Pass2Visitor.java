@@ -105,7 +105,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         Integer value = visit(ctx.expr());
 
         String typeIndicator = (ctx.expr().typeSpec == Predefined.integerType) ? "I"
-                : (ctx.expr().typeSpec == Predefined.realType)    ? "F"
+                : (ctx.expr().typeSpec == Predefined.stringType)    ? "Ljava/lang/String;"
                 :                                    "?";
 
         // Emit a field put instruction.
@@ -114,12 +114,22 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
                 + " " + typeIndicator);
 
         return value;
-        // return super.visitDeclarationOver(ctx);
     }
 
-    @Override
+    @Override // TODO
     public Integer visitAssignmentOver(FantasticParser.AssignmentOverContext ctx) {
-        return super.visitAssignmentOver(ctx);
+        Integer value = visit(ctx.expr());
+
+        String typeIndicator = (ctx.expr().typeSpec == Predefined.integerType) ? "I"
+                : (ctx.expr().typeSpec == Predefined.stringType)    ? "Ljava/lang/String;"
+                :                                    "?";
+
+        // Emit a field put instruction.
+        jFile.println("\tputstatic\t" + programName
+                +  "/" + ctx.variable().IDENTIFIER().toString()
+                + " " + typeIndicator);
+
+        return value;
     }
 
     @Override
