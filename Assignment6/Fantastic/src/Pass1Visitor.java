@@ -94,19 +94,22 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
     }
 
     @Override
-    // Note: Equivalent as visitVarDeclStat
+    /**
+     * Note: Equivalent as visitVarDeclStat
+     *
+     * Example:
+     * int a;
+     * */
     public Integer visitVar_decl_statement(FantasticParser.Var_decl_statementContext ctx) {
         jFile.println("\n; " + ctx.getText() + "\n");  // e.g. printing "; int a;" for a comment
 
         // get variable name (identifier)
         String varName = ctx.variable().getText();
-        System.out.println("varName: " + varName);
         SymTabEntry variableId = symTabStack.enterLocal(varName);
         variableId.setDefinition(VARIABLE);
 
         // get type info
         String typeName = ctx.type().getText(); // should be int or string for now
-        System.out.println("typeName: " + typeName);
         TypeSpec type;
         String   typeIndicator;
 
@@ -122,7 +125,7 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
             type = null;
             typeIndicator = "?";
         }
-        System.out.println("typeIndicator: " + typeIndicator);
+        variableId.setTypeSpec(type);
         jFile.println(".field private static " + varName + " " + typeIndicator);
 
         return visitChildren(ctx);
@@ -134,8 +137,41 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
     }
 
     @Override
+    /**
+     * Example:
+     * int a = 5;
+     * */
     public Integer visitDeclarationOver(FantasticParser.DeclarationOverContext ctx) {
-        return super.visitDeclarationOver(ctx);
+        jFile.println("\n; " + ctx.getText() + "\n");  // e.g. printing "; iint a = 5;" for a comment
+
+        // get variable name (identifier)
+        String varName = ctx.variable().getText();
+        SymTabEntry variableId = symTabStack.enterLocal(varName);
+        variableId.setDefinition(VARIABLE);
+
+        // get type info
+        String typeName = ctx.type().getText(); // should be int or string for now
+        TypeSpec type;
+        String   typeIndicator;
+
+        if (typeName.equalsIgnoreCase("int")) {
+            type = Predefined.integerType;
+            typeIndicator = "I";
+        }
+        else if (typeName.equalsIgnoreCase("string")) {
+            type = Predefined.stringType;
+            typeIndicator = "Ljava/lang/String;";
+        }
+        else { // TODO: figure out what we want to do here
+            type = null;
+            typeIndicator = "?";
+        }
+
+        variableId.setTypeSpec(type);
+        jFile.println(".field private static " + varName + " " + typeIndicator);
+
+
+        return visitChildren(ctx);
     }
 
     @Override
@@ -185,7 +221,9 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitLit(FantasticParser.LitContext ctx) {
-        return super.visitLit(ctx);
+        Integer value = visit(ctx.literal());
+        ctx.typeSpec = ctx.literal().typeSpec;
+        return value;
     }
 
     @Override
@@ -215,12 +253,14 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitIntLitOver(FantasticParser.IntLitOverContext ctx) {
-        return super.visitIntLitOver(ctx);
+        ctx.typeSpec = Predefined.integerType;
+        return visitChildren(ctx);
     }
 
     @Override
     public Integer visitStrLitOver(FantasticParser.StrLitOverContext ctx) {
-        return super.visitStrLitOver(ctx);
+        ctx.typeSpec = Predefined.stringType;
+        return visitChildren(ctx);
     }
 
     @Override

@@ -29,13 +29,13 @@ public class Pcl2
             inputFile = scanner.next();
         }
 
-        Pass1Visitor pass1 = new Pass1Visitor(inputFile.split("[.]")[0]);
+        String programName = inputFile.split("[.]")[0];
+        Pass1Visitor pass1 = new Pass1Visitor(programName);
         pass1.visit(tree);
 
         PrintWriter jFile = pass1.getAssemblyFile();
-        jFile.close();
 
-        Pass2Visitor pass2 = new Pass2Visitor(jFile);
+        Pass2Visitor pass2 = new Pass2Visitor(jFile, programName);
         pass2.visit(tree);
     }
 }

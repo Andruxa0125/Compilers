@@ -8,16 +8,46 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     String programName;
     private PrintWriter jFile;
     
-    public Pass2Visitor(PrintWriter jFile)
+    public Pass2Visitor(PrintWriter jFile, String programName)
     {
         this.jFile = jFile;
+        this.programName = programName;
     }
 
     // TODO: Override some of the following methods (not all)
 
     @Override
     public Integer visitProg(FantasticParser.ProgContext ctx) {
-        return super.visitProg(ctx);
+        // Emit the main program header.
+        jFile.println("\n; === Emit the main method header. === \n");
+        jFile.println(".method public static main([Ljava/lang/String;)V");
+        jFile.println("\n; === Emit the main method prologue. === \n");
+        jFile.println("\tnew RunTimer");
+        jFile.println("\tdup");
+        jFile.println("\tinvokenonvirtual RunTimer/<init>()V");
+        jFile.println("\tputstatic        " + programName + "/_runTimer LRunTimer;");
+        jFile.println("\tnew PascalTextIn");
+        jFile.println("\tdup");
+        jFile.println("\tinvokenonvirtual PascalTextIn/<init>()V");
+        jFile.println("\tputstatic        " + programName + "/_standardIn LPascalTextIn;");
+
+        jFile.println("\n; === Emit the code for statements in the main program. === \n");
+        Integer value = visitChildren(ctx);
+
+        // Emit the main program epilogue.
+        jFile.println("\n; === Emit the main program epilogue. === \n");
+        jFile.println();
+        jFile.println("\tgetstatic     " + programName + "/_runTimer LRunTimer;");
+        jFile.println("\tinvokevirtual RunTimer.printElapsedTime()V");
+        jFile.println();
+        jFile.println("\treturn");
+        jFile.println();
+        jFile.println(".limit locals 16");
+        jFile.println(".limit stack 16");
+        jFile.println(".end method");
+
+        jFile.close();
+        return value;
     }
 
     @Override
@@ -72,7 +102,19 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitDeclarationOver(FantasticParser.DeclarationOverContext ctx) {
-        return super.visitDeclarationOver(ctx);
+        Integer value = visit(ctx.expr());
+
+        String typeIndicator = (ctx.expr().typeSpec == Predefined.integerType) ? "I"
+                : (ctx.expr().typeSpec == Predefined.realType)    ? "F"
+                :                                    "?";
+
+        // Emit a field put instruction.
+        jFile.println("\tputstatic\t" + programName
+                +  "/" + ctx.variable().IDENTIFIER().toString()
+                + " " + typeIndicator);
+
+        return value;
+        // return super.visitDeclarationOver(ctx);
     }
 
     @Override
@@ -152,12 +194,18 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitIntLitOver(FantasticParser.IntLitOverContext ctx) {
-        return super.visitIntLitOver(ctx);
+        // Emit a load constant instruction.
+        jFile.println("\tldc\t" + ctx.getText());
+
+        return visitChildren(ctx);
     }
 
     @Override
     public Integer visitStrLitOver(FantasticParser.StrLitOverContext ctx) {
-        return super.visitStrLitOver(ctx);
+        // Emit a load constant instruction.
+        jFile.println("\tldc\t" + ctx.getText());
+
+        return visitChildren(ctx);
     }
 
     @Override
