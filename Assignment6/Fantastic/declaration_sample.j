@@ -8,6 +8,10 @@
 
 .field private static a I
 
+; stringstr;
+
+.field private static str Ljava/lang/String;
+
 ; intb=1;
 
 .field private static b I
@@ -31,6 +35,10 @@
 
 	ldc	1
 	putstatic	declaration_sample/b I
+	ldc	10
+	putstatic	declaration_sample/a I
+	ldc	"Hello"
+	putstatic	declaration_sample/str Ljava/lang/String;
 
 ; === Emit the main program epilogue. === 
 
