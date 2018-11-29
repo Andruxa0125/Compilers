@@ -1,4 +1,8 @@
 // Generated from /Users/izzymoriguchi/Dropbox/SJSU/CS_Courses/CS153/Assignments/Assignment2/Compilers/Assignment6/Fantastic/Fantastic.g4 by ANTLR 4.7
+
+    import wci.intermediate.TypeSpec;
+    //import wci.intermediate.symtabimpl.*;
+
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**

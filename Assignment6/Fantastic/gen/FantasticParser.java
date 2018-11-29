@@ -1,4 +1,8 @@
 // Generated from /Users/izzymoriguchi/Dropbox/SJSU/CS_Courses/CS153/Assignments/Assignment2/Compilers/Assignment6/Fantastic/Fantastic.g4 by ANTLR 4.7
+
+    import wci.intermediate.TypeSpec;
+    //import wci.intermediate.symtabimpl.*;
+
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -842,6 +846,7 @@ public class FantasticParser extends Parser {
 	}
 
 	public static class ExprContext extends ParserRuleContext {
+		public TypeSpec typeSpec = null;
 		public ExprContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -850,6 +855,7 @@ public class FantasticParser extends Parser {
 		public ExprContext() { }
 		public void copyFrom(ExprContext ctx) {
 			super.copyFrom(ctx);
+			this.typeSpec = ctx.typeSpec;
 		}
 	}
 	public static class CompOpeOverContext extends ExprContext {
@@ -1133,6 +1139,7 @@ public class FantasticParser extends Parser {
 	}
 
 	public static class LiteralContext extends ParserRuleContext {
+		public TypeSpec typeSpec = null;
 		public LiteralContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1141,6 +1148,7 @@ public class FantasticParser extends Parser {
 		public LiteralContext() { }
 		public void copyFrom(LiteralContext ctx) {
 			super.copyFrom(ctx);
+			this.typeSpec = ctx.typeSpec;
 		}
 	}
 	public static class IntLitOverContext extends LiteralContext {
