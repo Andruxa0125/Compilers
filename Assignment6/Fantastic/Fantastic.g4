@@ -1,5 +1,10 @@
 grammar Fantastic;
 
+@header {
+    import wci.intermediate.TypeSpec;
+    //import wci.intermediate.symtabimpl.*;
+}
+
 /** Parser rules */
 prog:   stat+ ; 
 
@@ -35,7 +40,8 @@ ref_type : INT_TYPE_REF
 
 
 
-expr:   expr op=('*'|'/'|'%') expr				# MulDivPercOver
+expr locals [ TypeSpec typeSpec = null ]
+    :   expr op=('*'|'/'|'%') expr				# MulDivPercOver
     |   expr op=('+'|'-') expr					# AddSubOver
     |   expr op=( '>' | '<' | '<=' | '>=' | '==' ) expr # CompOpeOver
     |   literal								# Lit
@@ -45,7 +51,8 @@ expr:   expr op=('*'|'/'|'%') expr				# MulDivPercOver
     ;
 
 variable : IDENTIFIER ;						
-literal : INT_LITERAL						#IntLitOver
+literal locals [ TypeSpec typeSpec = null ]
+        : INT_LITERAL						#IntLitOver
         | STRING_LITERAL					#StrLitOver
         ;
 func_call : function_name '(' args ')' ;
