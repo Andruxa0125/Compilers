@@ -243,12 +243,30 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitAddSubOver(FantasticParser.AddSubOverContext ctx) {
-        return super.visitAddSubOver(ctx);
+        Integer value = visitChildren(ctx);
+
+        TypeSpec type1 = ctx.expr(0).typeSpec;
+        TypeSpec type2 = ctx.expr(1).typeSpec;
+
+        boolean integerMode = (type1 == Predefined.integerType) && (type2 == Predefined.integerType);
+
+        ctx.typeSpec = integerMode ? Predefined.integerType : null;
+
+        return value;
     }
 
     @Override
     public Integer visitMulDivPercOver(FantasticParser.MulDivPercOverContext ctx) {
-        return super.visitMulDivPercOver(ctx);
+        Integer value = visitChildren(ctx);
+
+        TypeSpec type1 = ctx.expr(0).typeSpec;
+        TypeSpec type2 = ctx.expr(1).typeSpec;
+
+        boolean integerMode = (type1 == Predefined.integerType) && (type2 == Predefined.integerType);
+
+        ctx.typeSpec = integerMode ? Predefined.integerType : null;
+
+        return value;
     }
 
     @Override

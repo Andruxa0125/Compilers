@@ -200,12 +200,52 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitAddSubOver(FantasticParser.AddSubOverContext ctx) {
-        return super.visitAddSubOver(ctx);
+        Integer value = visitChildren(ctx);
+
+        TypeSpec type1 = ctx.expr(0).typeSpec;
+        TypeSpec type2 = ctx.expr(1).typeSpec;
+
+        boolean integerMode = (type1 == Predefined.integerType) && (type2 == Predefined.integerType);
+
+        String op = ctx.op.getText();
+        String opcode;
+
+        if (op.equals("+")) {
+            opcode = integerMode ? "iadd" : "????";
+        } else {
+            opcode = integerMode ? "isub" : "????";
+        }
+
+        // Emit an add or subtract instruction.
+        jFile.println("\t" + opcode);
+
+        return value;
     }
 
     @Override
     public Integer visitMulDivPercOver(FantasticParser.MulDivPercOverContext ctx) {
-        return super.visitMulDivPercOver(ctx);
+        Integer value = visitChildren(ctx);
+
+        TypeSpec type1 = ctx.expr(0).typeSpec;
+        TypeSpec type2 = ctx.expr(1).typeSpec;
+
+        boolean integerMode = (type1 == Predefined.integerType) && (type2 == Predefined.integerType);
+
+        String op = ctx.op.getText();
+        String opcode;
+
+        if (op.equals("*")) {
+            opcode = integerMode ? "imul" : "f???";
+        } else if (op.equals("/")) {
+            opcode = integerMode ? "idiv" : "????";
+        } else {
+            opcode = integerMode ? "irem" : "????";
+        }
+
+        // Emit a multiply or divide instruction.
+        jFile.println("\t" + opcode);
+
+        return value;
     }
 
     @Override
