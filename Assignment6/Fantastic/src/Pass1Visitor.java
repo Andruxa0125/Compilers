@@ -228,7 +228,12 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitVar(FantasticParser.VarContext ctx) {
-        return super.visitVar(ctx);
+        String variableName = ctx.variable().IDENTIFIER().toString();
+        SymTabEntry variableId = symTabStack.lookup(variableName);
+
+        ctx.typeSpec = variableId.getTypeSpec();
+        return visitChildren(ctx);
+        // return super.visitVar(ctx);
     }
 
     @Override
@@ -244,11 +249,6 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
     @Override
     public Integer visitMulDivPercOver(FantasticParser.MulDivPercOverContext ctx) {
         return super.visitMulDivPercOver(ctx);
-    }
-
-    @Override
-    public Integer visitVariable(FantasticParser.VariableContext ctx) {
-        return super.visitVariable(ctx);
     }
 
     @Override

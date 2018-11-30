@@ -179,7 +179,18 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitVar(FantasticParser.VarContext ctx) {
-        return super.visitVar(ctx);
+        String variableName = ctx.variable().IDENTIFIER().toString();
+        TypeSpec type = ctx.typeSpec;
+
+        String typeIndicator = (type == Predefined.integerType) ? "I"
+                : (type == Predefined.stringType)    ? "Ljava/lang/String;"
+                :                                    "?";
+
+        // Emit a field get instruction.
+        jFile.println("\tgetstatic\t" + programName +
+                "/" + variableName + " " + typeIndicator);
+
+        return visitChildren(ctx);
     }
 
     @Override
@@ -195,11 +206,6 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     @Override
     public Integer visitMulDivPercOver(FantasticParser.MulDivPercOverContext ctx) {
         return super.visitMulDivPercOver(ctx);
-    }
-
-    @Override
-    public Integer visitVariable(FantasticParser.VariableContext ctx) {
-        return super.visitVariable(ctx);
     }
 
     @Override
