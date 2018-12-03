@@ -12,10 +12,6 @@
 
 .field private static b I
 
-; intc=a+b;
-
-.field private static c I
-
 ; === Emit the main method header. === 
 
 .method public static main([Ljava/lang/String;)V
@@ -38,52 +34,32 @@
 	ldc	15
 	putstatic	if_sample/b I
 	getstatic	if_sample/a I
-	getstatic	if_sample/b I
-	iadd
-	putstatic	if_sample/c I
-	getstatic	if_sample/a I
 	ldc	4
 	icmpgt label0
 	iconst_0
 	goto label1
-	label0:
+label0:
 	iconst_1
-	label1:
-	getstatic	if_sample/a I
-	ldc	4
+label1:
 	ifne label2
 	goto label3
 	goto label4
 label2:
-	getstatic	if_sample/c I
-	ldc	5
-	imul
-	putstatic	if_sample/c I
+	ldc	1
 	goto label4
 label3:
-	getstatic	if_sample/b I
-	ldc	10
-	iadd
-	putstatic	if_sample/b I
+	ldc	2
 label4:
 	getstatic	if_sample/a I
 	ldc	4
 	icmpgt label5
 	iconst_0
 	goto label6
-	label5:
+label5:
 	iconst_1
-	label6:
-	getstatic	if_sample/a I
-	ldc	4
-	getstatic	if_sample/c I
-	ldc	5
-	imul
-	putstatic	if_sample/c I
-	getstatic	if_sample/b I
-	ldc	10
-	iadd
-	putstatic	if_sample/b I
+label6:
+	ldc	1
+	ldc	2
 
 ; === Emit the main program epilogue. === 
 
