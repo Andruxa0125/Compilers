@@ -25,3 +25,18 @@ while (b > 10)
 int d;
 string mstr;
 mstr = "hello";
+
+func int ourFunction(int a, int& b)
+{
+    b = b * 3;
+    int temp = a + b;
+    return temp;
+}
+
+func ourProcedure()
+{
+	int localVal = 124;
+}
+
+int e = ourFunction(1, b);
+ourProcedure();

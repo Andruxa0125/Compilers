@@ -109,7 +109,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     }
 
     @Override
-    public Integer visitFunc_decl_statement(FantasticParser.Func_decl_statementContext ctx) {
+    public Integer visitFunc_decl_statement(FantasticParser.Func_decl_statementContext ctx) {  // todo
         return super.visitFunc_decl_statement(ctx);
     }
 

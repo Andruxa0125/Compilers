@@ -60,6 +60,8 @@ func_call : function_name '(' args ')' ;
 params : ((type | ref_type) variable)? (',' (type | ref_type) variable)* ;
 
 args : (variable | literal)? (',' (variable | literal))* ;
+// args : (variable | literal)?  -> new idea by izzy
+//     | (variable | literal) (',' (variable | literal))*
 
 block : NEWLINE '{' NEWLINE stat* '}'                // full block
       | NEWLINE stat                                 // simple block
