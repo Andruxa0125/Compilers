@@ -7,7 +7,12 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
 {
     String programName;
     private PrintWriter jFile;
+    private static int labelCount = 0;
     
+    private static String generateLabel(){
+    	labelCount++;
+    	return "label" + String.valueOf(labelCount - 1);
+    }
     public Pass2Visitor(PrintWriter jFile, String programName)
     {
         this.jFile = jFile;
@@ -134,6 +139,32 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitIf_statement(FantasticParser.If_statementContext ctx) {
+    	// this will leave 1 or 0 on top of the stack.
+    	Integer val = visit(ctx.expr());
+    	String trueLab = generateLabel();
+    	String falseLab = "";
+    	boolean elseStatPres = ctx.children.size() > 5;
+    	if(elseStatPres)
+    		falseLab = generateLabel();
+    	String nextLab = generateLabel();
+    	
+    	jFile.println("\tifne " + trueLab);
+    	if(elseStatPres)
+    		jFile.println("\tgoto " + falseLab);	
+    	jFile.println("\tgoto " + nextLab);
+    	
+    			
+    	// TRUE label.
+    	// visits the true blocks and then jumps to next label block.
+    	jFile.println(trueLab + ":");
+    	Integer valTrueBlock = visit(ctx.block(0));
+    	jFile.println("\tgoto " + nextLab);
+    			
+    	// FALSE label.
+    	jFile.println(falseLab + ":");
+    	Integer valFalseBlock = visit(ctx.block(1));
+    			
+    	jFile.println(nextLab + ":");
         return super.visitIf_statement(ctx);
     }
 
@@ -164,6 +195,33 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitCompOpeOver(FantasticParser.CompOpeOverContext ctx) {
+    	Integer val1 = visit(ctx.expr(0));
+    	Integer val2 = visit(ctx.expr(1));
+    	String trueLab = generateLabel();
+    	String nextLab = generateLabel();
+    	// this means we are operating on integers
+    	if(ctx.expr(0).typeSpec == Predefined.integerType){
+    		// '>'
+    		if(ctx.op.getType() == FantasticParser.GT)
+    			jFile.println("\ticmpgt " + trueLab);
+    		else if(ctx.op.getType() == FantasticParser.LT)
+    			jFile.println("\ticmplt " + trueLab);
+    		else if(ctx.op.getType() == FantasticParser.LET)
+    			jFile.println("\ticmple " + trueLab);
+    		else if(ctx.op.getType() == FantasticParser.GET)
+    			jFile.println("\ticmpge " + trueLab);
+    		else if(ctx.op.getType() == FantasticParser.EQ)
+    			jFile.println("\ticmpeq " + trueLab);
+    		jFile.println("\ticonst_0");// push 0 if condition is false
+    		jFile.println("\tgoto " + nextLab); // just continue with next instruction
+    		jFile.println("\t" + trueLab + ":"); // if condition is met
+    		jFile.println("\ticonst_1"); // push 1 if condition is true
+    		jFile.println("\t" + nextLab + ":");
+    	}
+////        String typeIndicator = (ctx.expr().typeSpec == Predefined.integerType) ? "I"
+////                : (ctx.expr().typeSpec == Predefined.stringType)    ? "Ljava/lang/String;"
+////                :                                    "?";
+        // NOTE: return value doesn't mean anything
         return super.visitCompOpeOver(ctx);
     }
 
