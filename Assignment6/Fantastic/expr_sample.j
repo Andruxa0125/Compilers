@@ -45,6 +45,11 @@
 	putstatic	expr_sample/str Ljava/lang/String;
 	getstatic	expr_sample/str Ljava/lang/String;
 	putstatic	expr_sample/copy Ljava/lang/String;
+	ldc	1
+	ldc	2
+	iadd
+	ldc	3
+	iadd
 
 ; === Emit the main program epilogue. === 
 
