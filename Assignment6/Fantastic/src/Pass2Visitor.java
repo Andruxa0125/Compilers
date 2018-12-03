@@ -87,7 +87,15 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitWhileStat(FantasticParser.WhileStatContext ctx) {
-        return super.visitWhileStat(ctx);
+    	String startLabel = generateLabel();						
+    	jFile.println(startLabel + ":");
+    	Integer value = visit(ctx.expr());					//Get condition value by visiting the expr child
+    	String exitLabel = generateLabel();
+    	jFile.println("\tifne " + exitLabel);				//check condition; 1 = exit loop, 0 = execute block
+    	visit(ctx.block());									
+    	jFile.println("\tgoto " +  startLabel);				//jump back to the beginning of the loop
+    	jFile.println(exitLabel + ":");						//create exitloop
+        return value;
     }
 
     @Override
@@ -193,6 +201,11 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         return super.visitRef_type(ctx);
     }
 
+    
+    /** 
+     * Tab alignment on labels
+     * Changed return value from super to val1
+     */
     @Override
     public Integer visitCompOpeOver(FantasticParser.CompOpeOverContext ctx) {
     	Integer val1 = visit(ctx.expr(0));
@@ -214,15 +227,15 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     			jFile.println("\ticmpeq " + trueLab);
     		jFile.println("\ticonst_0");// push 0 if condition is false
     		jFile.println("\tgoto " + nextLab); // just continue with next instruction
-    		jFile.println("\t" + trueLab + ":"); // if condition is met
+    		jFile.println(trueLab + ":"); // if condition is met
     		jFile.println("\ticonst_1"); // push 1 if condition is true
-    		jFile.println("\t" + nextLab + ":");
+    		jFile.println(nextLab + ":");
     	}
 ////        String typeIndicator = (ctx.expr().typeSpec == Predefined.integerType) ? "I"
 ////                : (ctx.expr().typeSpec == Predefined.stringType)    ? "Ljava/lang/String;"
 ////                :                                    "?";
         // NOTE: return value doesn't mean anything
-        return super.visitCompOpeOver(ctx);
+        return val1;//super.visitCompOpeOver(ctx);
     }
 
     @Override
