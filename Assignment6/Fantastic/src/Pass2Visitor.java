@@ -383,7 +383,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
 
         String op = ctx.op.getText();
         String opcode;
-        System.out.println("Operator: " + op);
+
         if (op.equals("*")) {
             opcode = integerMode ? "imul" : "????";
         } else if (op.equals("/")) {

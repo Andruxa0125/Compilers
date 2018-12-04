@@ -4,15 +4,36 @@
 .field private static _runTimer LRunTimer;
 .field private static _standardIn LPascalTextIn;
 
-; i,j:integer
+; inta;
 
-.field private static i I
-.field private static j I
+.field private static a I
 
-; alpha,beta5x:real
+; intb=15;
 
-.field private static alpha F
-.field private static beta5x F
+.field private static b I
+
+; intc=a+b;
+
+.field private static c I
+
+; stringstra="bla";
+
+.field private static stra Ljava/lang/String;
+
+; stringstrb="bla";
+
+.field private static strb Ljava/lang/String;
+
+; intprec=1+2*5;
+
+.field private static prec I
+
+; intparen=(1+2)*5;
+
+.field private static paren I
+
+; === Emit the class constructor. === 
+
 
 .method public <init>()V
 
@@ -24,7 +45,11 @@
 .limit stack 1
 .end method
 
+; === Emit the main method header. === 
+
 .method public static main([Ljava/lang/String;)V
+
+; === Emit the main method prologue. === 
 
 	new RunTimer
 	dup
@@ -35,55 +60,90 @@
 	invokenonvirtual PascalTextIn/<init>()V
 	putstatic        sample/_standardIn LPascalTextIn;
 
-; i:=32
+; === Emit the code for statements in the main program. === 
 
-	ldc	32
-	putstatic	sample/i I
-
-; j:=i
-
-	getstatic	sample/i I
-	putstatic	sample/j I
-
-; i:=-2+3*j
-
+	ldc	5
+	putstatic	sample/a I
+	ldc	15
+	putstatic	sample/b I
+	getstatic	sample/a I
+	getstatic	sample/b I
+	iadd
+	putstatic	sample/c I
+	ldc	"bla"
+	putstatic	sample/stra Ljava/lang/String;
+	ldc	"bla"
+	putstatic	sample/strb Ljava/lang/String;
+	getstatic	sample/a I
+	ldc	4
+	if_icmpgt LABEL0
+	ldc 0
+	goto LABEL1
+LABEL0:
+	ldc 1
+LABEL1:
+	ifne LABEL2
+	goto LABEL3
+	goto LABEL4
+LABEL2:
+	getstatic	sample/c I
+	ldc	5
+	imul
+	putstatic	sample/c I
+	goto LABEL4
+LABEL3:
+	getstatic	sample/b I
+	ldc	10
+	iadd
+	putstatic	sample/b I
+LABEL4:
+LABEL5:
+	getstatic	sample/b I
+	ldc	10
+	if_icmpgt LABEL6
+	ldc 0
+	goto LABEL7
+LABEL6:
+	ldc 1
+LABEL7:
+	ifne LABEL8
+	getstatic	sample/a I
+	ldc	1
+	iadd
+	putstatic	sample/a I
+	getstatic	sample/b I
+	ldc	1
+	isub
+	putstatic	sample/b I
+	goto LABEL5
+LABEL8:
+	getstatic	sample/stra Ljava/lang/String;
+	getstatic	sample/strb Ljava/lang/String;
+	pop
+	pop
+	ldc 1
+	ifne LABEL11
+	goto LABEL12
+LABEL11:
+	ldc	"staristrue"
+	putstatic	sample/stra Ljava/lang/String;
+	goto LABEL12
+LABEL12:
+	ldc	1
 	ldc	2
-	ineg
-	ldc	3
-	getstatic	sample/j I
+	ldc	5
 	imul
 	iadd
-	putstatic	sample/i I
+	putstatic	sample/prec I
+	ldc	1
+	ldc	2
+	iadd
+	ldc	5
+	imul
+	putstatic	sample/paren I
 
-; alpha:=9.3
+; === Emit the main program epilogue. === 
 
-	ldc	9.3
-	putstatic	sample/alpha F
-
-; beta5x:=alpha
-
-	getstatic	sample/alpha F
-	putstatic	sample/beta5x F
-
-; beta5x:=alpha/3.7-alpha*2.88
-
-	getstatic	sample/alpha F
-	ldc	3.7
-	fdiv
-	getstatic	sample/alpha F
-	ldc	2.88
-	fmul
-	fsub
-	putstatic	sample/beta5x F
-
-; beta5x:=8.45*(alpha+9.12)
-
-	ldc	8.45
-	getstatic	sample/alpha F
-	ldc	9.12
-	fadd
-	fmul
-	putstatic	sample/beta5x F
 
 	getstatic     sample/_runTimer LRunTimer;
 	invokevirtual RunTimer.printElapsedTime()V

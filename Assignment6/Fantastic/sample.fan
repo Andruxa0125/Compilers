@@ -1,11 +1,9 @@
-123;
-1 + 2 + 3;
-
-int a = 5;
+int a;
+a = 5;
 int b = 15;
 int c = a + b;
-string str = "bla";
-c = 0;
+string stra = "bla";
+string strb = "bla";
 
 if (a > 4)
 {
@@ -22,21 +20,10 @@ while (b > 10)
     b = b - 1;
 }
 
-int d;
-string mstr;
-mstr = "hello";
-
-func int ourFunction(int a, int& b)
+if (stra == strb)
 {
-    b = b * 3;
-    int temp = a + b;
-    return temp;
+    stra = "staristrue";
 }
 
-func ourProcedure()
-{
-	int localVal = 124;
-}
-
-int e = ourFunction(1, b);
-ourProcedure();
+int prec = 1 + 2 * 5;
+int paren = (1 + 2) * 5;
