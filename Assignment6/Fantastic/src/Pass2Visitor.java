@@ -1,4 +1,5 @@
 import java.io.PrintWriter;
+import java.util.Stack;
 
 import wci.intermediate.*;
 import wci.intermediate.symtabimpl.*;
@@ -8,6 +9,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     String programName;
     private PrintWriter jFile;
     private static int labelCount = 0;
+    private static Stack<String> stack;
     
     private static String generateLabel(){
     	labelCount++;
@@ -17,10 +19,16 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     {
         this.jFile = jFile;
         this.programName = programName;
+        this.stack = new Stack();
     }
 
     // TODO: Override some of the following methods (not all)
-
+    private void boolHelper(boolean expr){
+    	if(expr)
+    		jFile.println("\tldc 1"); // push 1 if condition is true
+    	else
+    		jFile.println("\tldc 0"); // push 0 if condition is false
+    }
     @Override
     public Integer visitProg(FantasticParser.ProgContext ctx) {
         // Emit the main program header.
@@ -125,7 +133,11 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         jFile.println("\tputstatic\t" + programName
                 +  "/" + ctx.variable().IDENTIFIER().toString()
                 + " " + typeIndicator);
-
+        
+        // runtime stack to simulate actions for strings.
+        if(!typeIndicator.equals("I")){
+            stack.push(ctx.expr().getText());
+        }
         return value;
     }
 
@@ -141,7 +153,11 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         jFile.println("\tputstatic\t" + programName
                 +  "/" + ctx.variable().IDENTIFIER().toString()
                 + " " + typeIndicator);
-
+        
+        // runtime stack to simulate actions for strings.
+        if(!typeIndicator.equals("I")){
+            stack.push(ctx.expr().getText());
+        }
         return value;
     }
 
@@ -212,12 +228,16 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
      */
     @Override
     public Integer visitCompOpeOver(FantasticParser.CompOpeOverContext ctx) {
+    	int before = stack.size();
+    	boolean strings = false;
     	Integer val1 = visit(ctx.expr(0));
     	Integer val2 = visit(ctx.expr(1));
+    	if(stack.size() > before)
+    		strings = true;
     	String trueLab = generateLabel();
     	String nextLab = generateLabel();
     	// this means we are operating on integers
-    	if(ctx.expr(0).typeSpec == Predefined.integerType){
+    	if(!strings){
     		// '>'
     		if(ctx.op.getType() == FantasticParser.GT)
     			jFile.println("\tif_icmpgt " + trueLab);
@@ -235,9 +255,29 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     		jFile.println("\tldc 1"); // push 1 if condition is true
     		jFile.println(nextLab + ":");
     	}
-////        String typeIndicator = (ctx.expr().typeSpec == Predefined.integerType) ? "I"
-////                : (ctx.expr().typeSpec == Predefined.stringType)    ? "Ljava/lang/String;"
-////                :                                    "?";
+    	// must be strings...
+    	else {
+    		String sec = stack.pop();
+    		String fir = stack.pop();
+    		
+    		// positive if fir>sec
+    		// 0 if fir==sec
+    		// negative if fir < sec
+    		int res = fir.compareTo(sec);
+    		if(ctx.op.getType() == FantasticParser.GT)
+    			boolHelper(res > 0);
+    		else if(ctx.op.getType() == FantasticParser.LT)
+    			boolHelper(res < 0);
+    		else if(ctx.op.getType() == FantasticParser.LET)
+    			boolHelper(res <= 0);
+    		else if(ctx.op.getType() == FantasticParser.GET)
+    			boolHelper(res >= 0);
+    		else if(ctx.op.getType() == FantasticParser.EQ)
+    			boolHelper(res == 0);
+    		// TODO:
+    		// need instruction here to pop from that stack twice
+    	}
+    	
         // NOTE: return value doesn't mean anything
         return val1;//super.visitCompOpeOver(ctx);
     }
@@ -328,15 +368,16 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     public Integer visitIntLitOver(FantasticParser.IntLitOverContext ctx) {
         // Emit a load constant instruction.
         jFile.println("\tldc\t" + ctx.getText());
-
         return visitChildren(ctx);
     }
 
     @Override
     public Integer visitStrLitOver(FantasticParser.StrLitOverContext ctx) {
         // Emit a load constant instruction.
-        jFile.println("\tldc\t" + ctx.getText());
-
+    	String txt = ctx.getText();
+        jFile.println("\tldc\t" + txt);
+        // code to support operations on strings.
+        stack.push(txt);
         return visitChildren(ctx);
     }
 
