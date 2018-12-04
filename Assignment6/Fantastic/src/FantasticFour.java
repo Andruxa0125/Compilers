@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-public class Pcl2 
+public class FantasticFour
 {
     public static void main(String[] args) throws Exception 
     {
