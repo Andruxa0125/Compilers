@@ -238,7 +238,17 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitParens(FantasticParser.ParensContext ctx) {
-        return super.visitParens(ctx);
+        Integer value = visitChildren(ctx);
+
+        TypeSpec type1 = ctx.expr().typeSpec;
+        if (type1 == Predefined.integerType) {
+            ctx.typeSpec = Predefined.integerType;
+        } else if (type1 == Predefined.stringType) {
+            ctx.typeSpec = Predefined.stringType;
+        } else {
+            ctx.typeSpec = null;
+        }
+        return value;
     }
 
     @Override

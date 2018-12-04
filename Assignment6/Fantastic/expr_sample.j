@@ -4,7 +4,7 @@
 .field private static _runTimer LRunTimer;
 .field private static _standardIn LPascalTextIn;
 
-; ints=2;
+; ints=(1+5)*2;
 
 .field private static s I
 
@@ -38,7 +38,11 @@
 
 ; === Emit the code for statements in the main program. === 
 
+	ldc	1
+	ldc	5
+	iadd
 	ldc	2
+	imul
 	putstatic	expr_sample/s I
 
 ; === Emit the main program epilogue. === 
