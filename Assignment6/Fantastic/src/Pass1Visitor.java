@@ -13,7 +13,6 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
 {
     private SymTabStack symTabStack;
     private SymTabEntry programId;
-    //private ArrayList<SymTabEntry> variableIdList;
     private PrintWriter jFile;
     
     public Pass1Visitor(String programName)
@@ -22,7 +21,6 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
         symTabStack = SymTabFactory.createSymTabStack();
         Predefined.initialize(symTabStack);
 
-        // TODO: not sure if the following 4 lines are needed
         programId = symTabStack.enterLocal(programName);
         programId.setDefinition(DefinitionImpl.PROGRAM);
         programId.setAttribute(ROUTINE_SYMTAB, symTabStack.push());
@@ -47,9 +45,6 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
     }
     
     public PrintWriter getAssemblyFile() { return jFile; }
-
-
-    // TODO: Need to override some of the following methods (refer to Pc2's Pass1Visitor)
 
 
     @Override
@@ -94,12 +89,6 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
     }
 
     @Override
-    /**
-     * Note: Equivalent as visitVarDeclStat
-     *
-     * Example:
-     * int a;
-     * */
     public Integer visitVar_decl_statement(FantasticParser.Var_decl_statementContext ctx) {
         jFile.println("\n; " + ctx.getText() + "\n");  // e.g. printing "; int a;" for a comment
 
@@ -121,7 +110,7 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
             type = Predefined.stringType;
             typeIndicator = "Ljava/lang/String;";
         }
-        else { // TODO: figure out what we want to do here
+        else {
             type = null;
             typeIndicator = "?";
         }
@@ -137,10 +126,6 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
     }
 
     @Override
-    /**
-     * Example:
-     * int a = 5;
-     * */
     public Integer visitDeclarationOver(FantasticParser.DeclarationOverContext ctx) {
         jFile.println("\n; " + ctx.getText() + "\n");  // e.g. printing "; iint a = 5;" for a comment
 
@@ -162,7 +147,7 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
             type = Predefined.stringType;
             typeIndicator = "Ljava/lang/String;";
         }
-        else { // TODO: figure out what we want to do here
+        else {
             type = null;
             typeIndicator = "?";
         }
@@ -233,7 +218,6 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
 
         ctx.typeSpec = variableId.getTypeSpec();
         return visitChildren(ctx);
-        // return super.visitVar(ctx);
     }
 
     @Override
@@ -259,8 +243,9 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
         TypeSpec type2 = ctx.expr(1).typeSpec;
 
         boolean integerMode = (type1 == Predefined.integerType) && (type2 == Predefined.integerType);
+        boolean stringMode =  (type1 == Predefined.stringType) && (type2 == Predefined.stringType);
 
-        ctx.typeSpec = integerMode ? Predefined.integerType : null;
+        ctx.typeSpec = integerMode ? Predefined.integerType : stringMode ? Predefined.stringType : null;
 
         return value;
     }

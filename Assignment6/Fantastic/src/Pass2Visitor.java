@@ -24,7 +24,6 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         varValue = new Hashtable<String, String>();
     }
 
-    // TODO: Override some of the following methods (not all)
     private void boolHelper(boolean expr){
     	if(expr)
     		jFile.println("\tldc 1"); // push 1 if condition is true
@@ -33,6 +32,19 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     }
     @Override
     public Integer visitProg(FantasticParser.ProgContext ctx) {
+        // Emit constructor.
+        jFile.println("\n; === Emit the class constructor. === \n");
+        jFile.println();
+        jFile.println(".method public <init>()V");
+        jFile.println();
+        jFile.println("\taload_0");
+        jFile.println("\tinvokenonvirtual    java/lang/Object/<init>()V");
+        jFile.println("\treturn");
+        jFile.println();
+        jFile.println(".limit locals 1");
+        jFile.println(".limit stack 1");
+        jFile.println(".end method");
+
         // Emit the main program header.
         jFile.println("\n; === Emit the main method header. === \n");
         jFile.println(".method public static main([Ljava/lang/String;)V");
@@ -119,7 +131,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     }
 
     @Override
-    public Integer visitFunc_decl_statement(FantasticParser.Func_decl_statementContext ctx) {  // todo
+    public Integer visitFunc_decl_statement(FantasticParser.Func_decl_statementContext ctx) {
         return super.visitFunc_decl_statement(ctx);
     }
 
@@ -130,7 +142,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         String typeIndicator = (ctx.expr().typeSpec == Predefined.integerType) ? "I"
                 : (ctx.expr().typeSpec == Predefined.stringType)    ? "Ljava/lang/String;"
                 :                                    "?";
-
+        // System.out.println("ctx.expr().getText(): " + ctx.expr().getText());
         // Emit a field put instruction.
         jFile.println("\tputstatic\t" + programName
                 +  "/" + ctx.variable().IDENTIFIER().toString()
@@ -145,7 +157,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         return value;
     }
 
-    @Override // TODO
+    @Override
     public Integer visitAssignmentOver(FantasticParser.AssignmentOverContext ctx) {
         Integer value = visit(ctx.expr());
 
@@ -157,7 +169,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         jFile.println("\tputstatic\t" + programName
                 +  "/" + ctx.variable().IDENTIFIER().toString()
                 + " " + typeIndicator);
-        
+        //System.out.println("ctx.expr().getText(): " + ctx.expr().getText());
         // runtime stack to simulate actions for strings.
         if(!typeIndicator.equals("I")){
             stack.push(ctx.expr().getText());
@@ -265,7 +277,8 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     	else {
     		String sec = stack.pop();
     		String fir = stack.pop();
-    		
+            jFile.println("\tpop");
+            jFile.println("\tpop");
     		// positive if fir>sec
     		// 0 if fir==sec
     		// negative if fir < sec
@@ -283,9 +296,9 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     		// TODO:
     		// need instruction here to pop from that stack twice
     	}
-    	
+
         // NOTE: return value doesn't mean anything
-        return val1;//super.visitCompOpeOver(ctx);
+        return val1;
     }
 
     @Override
@@ -332,12 +345,23 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         TypeSpec type2 = ctx.expr(1).typeSpec;
 
         boolean integerMode = (type1 == Predefined.integerType) && (type2 == Predefined.integerType);
+        boolean stringMode = (type1 == Predefined.stringType) && (type2 == Predefined.stringType);
 
         String op = ctx.op.getText();
-        String opcode;
+        String opcode = "";
 
         if (op.equals("+")) {
-            opcode = integerMode ? "iadd" : "????";
+            if (integerMode) {
+                opcode = "iadd";
+            } else if (stringMode) {
+                String str1 = stack.pop().replace("\"", "");
+                String str2 = stack.pop().replace("\"", "");
+                String concatOutput = str2 + str1;
+                concatOutput = "\"" + concatOutput + "\"";
+                jFile.println("\tldc\t" + concatOutput);
+            } else {
+                opcode = "????";
+            }
         } else {
             opcode = integerMode ? "isub" : "????";
         }
@@ -355,8 +379,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         TypeSpec type1 = ctx.expr(0).typeSpec;
         TypeSpec type2 = ctx.expr(1).typeSpec;
 
-        //boolean integerMode = (type1 == Predefined.integerType) && (type2 == Predefined.integerType);
-        boolean integerMode = true;
+        boolean integerMode = (type1 == Predefined.integerType) && (type2 == Predefined.integerType);
 
         String op = ctx.op.getText();
         String opcode;
