@@ -12,6 +12,14 @@
 
 .field private static b I
 
+; stringc="hello";
+
+.field private static c Ljava/lang/String;
+
+; stringd="hello";
+
+.field private static d Ljava/lang/String;
+
 ; === Emit the class constructor. === 
 
 
@@ -63,6 +71,24 @@ LABEL2:
 LABEL3:
 	ldc	222
 LABEL4:
+	ldc	"hello"
+	putstatic	if_sample/c Ljava/lang/String;
+	ldc	"hello"
+	putstatic	if_sample/d Ljava/lang/String;
+	getstatic	if_sample/c Ljava/lang/String;
+	getstatic	if_sample/d Ljava/lang/String;
+	if_icmpeq LABEL5
+	ldc 0
+	goto LABEL6
+LABEL5:
+	ldc 1
+LABEL6:
+	ifne LABEL7
+	goto LABEL8
+LABEL7:
+	ldc	333
+	goto LABEL8
+LABEL8:
 
 ; === Emit the main program epilogue. === 
 
