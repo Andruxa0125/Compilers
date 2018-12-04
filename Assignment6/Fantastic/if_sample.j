@@ -35,31 +35,18 @@
 	putstatic	if_sample/b I
 	getstatic	if_sample/a I
 	ldc	4
-	icmpgt label0
-	iconst_0
-	goto label1
-label0:
-	iconst_1
-label1:
-	ifne label2
-	goto label3
-	goto label4
-label2:
+	if_icmpgt LABEL0
+	ldc 0
+	goto LABEL1
+LABEL0:
+	ldc 1
+LABEL1:
+	ifne LABEL2
+	goto LABEL3
+LABEL2:
 	ldc	1
-	goto label4
-label3:
-	ldc	2
-label4:
-	getstatic	if_sample/a I
-	ldc	4
-	icmpgt label5
-	iconst_0
-	goto label6
-label5:
-	iconst_1
-label6:
-	ldc	1
-	ldc	2
+	goto LABEL3
+LABEL3:
 
 ; === Emit the main program epilogue. === 
 

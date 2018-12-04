@@ -34,16 +34,16 @@
 	putstatic	while_sample/a I
 	ldc	15
 	putstatic	while_sample/b I
-label0:
+LABEL0:
 	getstatic	while_sample/b I
 	ldc	10
-	icmpgt label1
-	iconst_0
-	goto label2
-label1:
-	iconst_1
-label2:
-	ifne label3
+	if_icmpgt LABEL1
+	ldc 0
+	goto LABEL2
+LABEL1:
+	ldc 1
+LABEL2:
+	ifne LABEL3
 	getstatic	while_sample/a I
 	ldc	1
 	iadd
@@ -52,8 +52,8 @@ label2:
 	ldc	1
 	isub
 	putstatic	while_sample/b I
-	goto label0
-label3:
+	goto LABEL0
+LABEL3:
 
 ; === Emit the main program epilogue. === 
 

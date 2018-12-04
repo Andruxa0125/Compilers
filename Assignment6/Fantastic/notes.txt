@@ -1,20 +1,10 @@
 
-// varialbe declaration --> become program variable/field
+- String comparison -- Andrey
+    - create our own stack for string
+    - look for places that push to stack
+    - < > <= >= ==
+- String concatenation
+    - inside AddSubVisitor
+- Precidence rule
+    - move (expr) to the top?
 
-int d;   // visitVar_decl_statement
-string mstr;  // visitVar_decl_statement
-
-int a = 5;   // visitDeclarationOver
-/*
-	Break down "int a = 5;" into two parts -> "int a;" and "a = 5;".
-	"int a;" --> visitVar_decl_statement -> add program variable
-	"a = 5;" --> assignmentOver -> do assignment statement inside main method 
-
-*/
-
-// expressions should be inside the main method of java
-123;              
-1 + 2 + 3;
-
-// string concatenation is not supported ("+" is used only on int)
-string str = "Hello" + "World"; // --> not supported

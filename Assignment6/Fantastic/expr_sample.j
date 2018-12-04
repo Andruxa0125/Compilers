@@ -4,21 +4,9 @@
 .field private static _runTimer LRunTimer;
 .field private static _standardIn LPascalTextIn;
 
-; inta=1;
+; ints=(5+2)/2;
 
-.field private static a I
-
-; intb=a;
-
-.field private static b I
-
-; stringstr="str1";
-
-.field private static str Ljava/lang/String;
-
-; stringcopy=str;
-
-.field private static copy Ljava/lang/String;
+.field private static s I
 
 ; === Emit the main method header. === 
 
@@ -37,19 +25,12 @@
 
 ; === Emit the code for statements in the main program. === 
 
-	ldc	1
-	putstatic	expr_sample/a I
-	getstatic	expr_sample/a I
-	putstatic	expr_sample/b I
-	ldc	"str1"
-	putstatic	expr_sample/str Ljava/lang/String;
-	getstatic	expr_sample/str Ljava/lang/String;
-	putstatic	expr_sample/copy Ljava/lang/String;
-	ldc	1
+	ldc	5
 	ldc	2
 	iadd
-	ldc	3
-	iadd
+	ldc	2
+	idiv
+	putstatic	expr_sample/s ?
 
 ; === Emit the main program epilogue. === 
 

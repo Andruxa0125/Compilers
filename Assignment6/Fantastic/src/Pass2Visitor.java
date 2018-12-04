@@ -11,7 +11,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     
     private static String generateLabel(){
     	labelCount++;
-    	return "label" + String.valueOf(labelCount - 1);
+    	return "LABEL" + String.valueOf(labelCount - 1);
     }
     public Pass2Visitor(PrintWriter jFile, String programName)
     {
@@ -169,11 +169,15 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     	jFile.println("\tgoto " + nextLab);
     			
     	// FALSE label.
-    	jFile.println(falseLab + ":");
-    	Integer valFalseBlock = visit(ctx.block(1));
+        if (elseStatPres) {
+            jFile.println(falseLab + ":");
+            Integer valFalseBlock = visit(ctx.block(1));
+        }
+
     			
     	jFile.println(nextLab + ":");
-        return super.visitIf_statement(ctx);
+    	return -1;
+        //return super.visitIf_statement(ctx);
     }
 
     @Override
@@ -216,19 +220,19 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     	if(ctx.expr(0).typeSpec == Predefined.integerType){
     		// '>'
     		if(ctx.op.getType() == FantasticParser.GT)
-    			jFile.println("\ticmpgt " + trueLab);
+    			jFile.println("\tif_icmpgt " + trueLab);
     		else if(ctx.op.getType() == FantasticParser.LT)
-    			jFile.println("\ticmplt " + trueLab);
+    			jFile.println("\tif_icmplt " + trueLab);
     		else if(ctx.op.getType() == FantasticParser.LET)
-    			jFile.println("\ticmple " + trueLab);
+    			jFile.println("\tif_icmple " + trueLab);
     		else if(ctx.op.getType() == FantasticParser.GET)
-    			jFile.println("\ticmpge " + trueLab);
+    			jFile.println("\tif_icmpge " + trueLab);
     		else if(ctx.op.getType() == FantasticParser.EQ)
-    			jFile.println("\ticmpeq " + trueLab);
-    		jFile.println("\ticonst_0");// push 0 if condition is false
+    			jFile.println("\tif_icmpeq " + trueLab);
+    		jFile.println("\tldc 0");// push 0 if condition is false
     		jFile.println("\tgoto " + nextLab); // just continue with next instruction
     		jFile.println(trueLab + ":"); // if condition is met
-    		jFile.println("\ticonst_1"); // push 1 if condition is true
+    		jFile.println("\tldc 1"); // push 1 if condition is true
     		jFile.println(nextLab + ":");
     	}
 ////        String typeIndicator = (ctx.expr().typeSpec == Predefined.integerType) ? "I"
@@ -300,13 +304,14 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         TypeSpec type1 = ctx.expr(0).typeSpec;
         TypeSpec type2 = ctx.expr(1).typeSpec;
 
-        boolean integerMode = (type1 == Predefined.integerType) && (type2 == Predefined.integerType);
+        //boolean integerMode = (type1 == Predefined.integerType) && (type2 == Predefined.integerType);
+        boolean integerMode = true;
 
         String op = ctx.op.getText();
         String opcode;
-
+        System.out.println("Operator: " + op);
         if (op.equals("*")) {
-            opcode = integerMode ? "imul" : "f???";
+            opcode = integerMode ? "imul" : "????";
         } else if (op.equals("/")) {
             opcode = integerMode ? "idiv" : "????";
         } else {

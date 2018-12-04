@@ -1,7 +1,3 @@
-int a = 1;
-int b = a;
 
-string str = "str1";
-string copy = str;
+int s = (5 + 2) / 2;
 
-1 + 2 + 3;
