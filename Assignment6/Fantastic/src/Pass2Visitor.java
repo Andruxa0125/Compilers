@@ -1,4 +1,5 @@
 import java.io.PrintWriter;
+import java.util.Hashtable;
 import java.util.Stack;
 
 import wci.intermediate.*;
@@ -10,7 +11,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     private PrintWriter jFile;
     private static int labelCount = 0;
     private static Stack<String> stack;
-    
+    private static Hashtable<String, String> varValue;
     private static String generateLabel(){
     	labelCount++;
     	return "LABEL" + String.valueOf(labelCount - 1);
@@ -20,6 +21,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         this.jFile = jFile;
         this.programName = programName;
         this.stack = new Stack();
+        varValue = new Hashtable<String, String>();
     }
 
     // TODO: Override some of the following methods (not all)
@@ -31,19 +33,6 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     }
     @Override
     public Integer visitProg(FantasticParser.ProgContext ctx) {
-        // Emit constructor.
-        jFile.println("\n; === Emit the class constructor. === \n");
-        jFile.println();
-        jFile.println(".method public <init>()V");
-        jFile.println();
-        jFile.println("\taload_0");
-        jFile.println("\tinvokenonvirtual    java/lang/Object/<init>()V");
-        jFile.println("\treturn");
-        jFile.println();
-        jFile.println(".limit locals 1");
-        jFile.println(".limit stack 1");
-        jFile.println(".end method");
-
         // Emit the main program header.
         jFile.println("\n; === Emit the main method header. === \n");
         jFile.println(".method public static main([Ljava/lang/String;)V");
@@ -150,6 +139,8 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         // runtime stack to simulate actions for strings.
         if(!typeIndicator.equals("I")){
             stack.push(ctx.expr().getText());
+            varValue.put(ctx.variable().IDENTIFIER().toString(),
+       		     ctx.expr().getText());
         }
         return value;
     }
@@ -170,6 +161,8 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         // runtime stack to simulate actions for strings.
         if(!typeIndicator.equals("I")){
             stack.push(ctx.expr().getText());
+            varValue.put(ctx.variable().IDENTIFIER().toString(),
+            		     ctx.expr().getText());
         }
         return value;
     }
@@ -317,6 +310,11 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         // Emit a field get instruction.
         jFile.println("\tgetstatic\t" + programName +
                 "/" + variableName + " " + typeIndicator);
+       
+        // must be a string
+        if(varValue.containsKey(variableName)){
+        	stack.push(varValue.get(variableName));
+        }
 
         return visitChildren(ctx);
     }
