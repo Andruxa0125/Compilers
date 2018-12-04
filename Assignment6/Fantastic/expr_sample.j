@@ -4,9 +4,22 @@
 .field private static _runTimer LRunTimer;
 .field private static _standardIn LPascalTextIn;
 
-; ints=(5+2)/2;
+; ints=2;
 
 .field private static s I
+
+; === Emit the class constructor. === 
+
+
+.method public <init>()V
+
+	aload_0
+	invokenonvirtual    java/lang/Object/<init>()V
+	return
+
+.limit locals 1
+.limit stack 1
+.end method
 
 ; === Emit the main method header. === 
 
@@ -25,12 +38,8 @@
 
 ; === Emit the code for statements in the main program. === 
 
-	ldc	5
 	ldc	2
-	iadd
-	ldc	2
-	idiv
-	putstatic	expr_sample/s ?
+	putstatic	expr_sample/s I
 
 ; === Emit the main program epilogue. === 
 

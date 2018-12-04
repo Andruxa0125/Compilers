@@ -12,6 +12,19 @@
 
 .field private static b I
 
+; === Emit the class constructor. === 
+
+
+.method public <init>()V
+
+	aload_0
+	invokenonvirtual    java/lang/Object/<init>()V
+	return
+
+.limit locals 1
+.limit stack 1
+.end method
+
 ; === Emit the main method header. === 
 
 .method public static main([Ljava/lang/String;)V
@@ -43,10 +56,13 @@ LABEL0:
 LABEL1:
 	ifne LABEL2
 	goto LABEL3
+	goto LABEL4
 LABEL2:
-	ldc	1
-	goto LABEL3
+	ldc	111
+	goto LABEL4
 LABEL3:
+	ldc	222
+LABEL4:
 
 ; === Emit the main program epilogue. === 
 

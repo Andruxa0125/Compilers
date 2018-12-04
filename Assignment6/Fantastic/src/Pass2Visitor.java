@@ -31,6 +31,19 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     }
     @Override
     public Integer visitProg(FantasticParser.ProgContext ctx) {
+        // Emit constructor.
+        jFile.println("\n; === Emit the class constructor. === \n");
+        jFile.println();
+        jFile.println(".method public <init>()V");
+        jFile.println();
+        jFile.println("\taload_0");
+        jFile.println("\tinvokenonvirtual    java/lang/Object/<init>()V");
+        jFile.println("\treturn");
+        jFile.println();
+        jFile.println(".limit locals 1");
+        jFile.println(".limit stack 1");
+        jFile.println(".end method");
+
         // Emit the main program header.
         jFile.println("\n; === Emit the main method header. === \n");
         jFile.println(".method public static main([Ljava/lang/String;)V");
