@@ -74,6 +74,11 @@
 	putstatic	sample/stra Ljava/lang/String;
 	ldc	"bla"
 	putstatic	sample/strb Ljava/lang/String;
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"FirstTest"
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
 	getstatic	sample/a I
 	ldc	4
 	if_icmpgt LABEL0
@@ -97,6 +102,31 @@ LABEL3:
 	iadd
 	putstatic	sample/b I
 LABEL4:
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"c"
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	getstatic	sample/c I
+	invokevirtual	java/io/PrintStream.println(I)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"b"
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	getstatic	sample/b I
+	invokevirtual	java/io/PrintStream.println(I)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"SecondTest"
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
 LABEL5:
 	getstatic	sample/b I
 	ldc	10
@@ -117,6 +147,26 @@ LABEL7:
 	putstatic	sample/b I
 	goto LABEL5
 LABEL8:
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"a"
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	getstatic	sample/a I
+	invokevirtual	java/io/PrintStream.println(I)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"b"
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	getstatic	sample/b I
+	invokevirtual	java/io/PrintStream.println(I)V
 	getstatic	sample/stra Ljava/lang/String;
 	getstatic	sample/strb Ljava/lang/String;
 	pop

@@ -8,14 +8,15 @@ grammar Fantastic;
 /** Parser rules */
 prog:   stat+ ; 
 
-stat:   if_statement NEWLINE 				# ifStat
-	|   expr SEMICOLON NEWLINE				# printStat
-	|   var_decl_statement NEWLINE			# varDeclStat
-	|   func_decl_statement NEWLINE			# funcDeclStat
-    |   assignment_statement NEWLINE		# assignStat
-    |   return_statement NEWLINE			# returnStat
-    |   WHILE '(' expr ')' block NEWLINE	# whileStat
-    |   NEWLINE								# newLineStat
+stat:   if_statement NEWLINE 				 # ifStat
+	|   expr SEMICOLON NEWLINE				 # printStat
+	|   var_decl_statement NEWLINE			 # varDeclStat
+	|   func_decl_statement NEWLINE			 # funcDeclStat
+    |   assignment_statement NEWLINE		 # assignStat
+    |   return_statement NEWLINE			 # returnStat
+    |   WHILE '(' expr ')' block NEWLINE	 # whileStat
+    |   PRINT '(' expr ')' SEMICOLON NEWLINE # printStat
+    |   NEWLINE								 # newLineStat
     ;
 
 var_decl_statement : type variable SEMICOLON ;
@@ -77,6 +78,7 @@ ELSE		: 'else';
 FUNCTION    : 'func' ;
 WHILE       : 'while' ;
 RETURN      : 'return' ;
+PRINT       : 'print' ;
 
 MUL			: '*';
 ADD			: '+';

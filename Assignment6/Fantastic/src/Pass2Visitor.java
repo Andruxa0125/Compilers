@@ -84,7 +84,34 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitPrintStat(FantasticParser.PrintStatContext ctx) {
-        return super.visitPrintStat(ctx);
+        jFile.println("\n; === Print statement. ===");
+        jFile.println("\tgetstatic\tjava/lang/System/out Ljava/io/PrintStream;");
+        Integer value = visit(ctx.expr());
+        if (ctx.expr().typeSpec == Predefined.integerType) {
+            jFile.println("\tinvokevirtual\tjava/io/PrintStream.println(I)V");
+        } else {
+            jFile.println("\tinvokevirtual\tjava/io/PrintStream.println(Ljava/lang/String;)V");
+        }
+
+
+
+        //getstatic    java/lang/System/out Ljava/io/PrintStream;
+        //ldc          "The square root of %4d is %8.4f\n"
+        //iconst_2
+        //anewarray    java/lang/Object
+        //dup
+        //iconst_0
+        //getstatic     FormatTest/n I
+        //invokestatic  java/lang/Integer.valueOf(I)Ljava/lang/Integer;
+        //aastore
+        //dup
+        //iconst_1
+        //getstatic     FormatTest/root F
+        //invokestatic  java/lang/Float.valueOf(F)Ljava/lang/Float;
+        //aastore
+        //invokevirtual  java/io/PrintStream.printf(
+        //                              Ljava/lang/String;[Ljava/lang/Object;)V
+        return value;
     }
 
     @Override
@@ -142,7 +169,6 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         String typeIndicator = (ctx.expr().typeSpec == Predefined.integerType) ? "I"
                 : (ctx.expr().typeSpec == Predefined.stringType)    ? "Ljava/lang/String;"
                 :                                    "?";
-        // System.out.println("ctx.expr().getText(): " + ctx.expr().getText());
         // Emit a field put instruction.
         jFile.println("\tputstatic\t" + programName
                 +  "/" + ctx.variable().IDENTIFIER().toString()
@@ -293,11 +319,9 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     			boolHelper(res >= 0);
     		else if(ctx.op.getType() == FantasticParser.EQ)
     			boolHelper(res == 0);
-    		// TODO:
-    		// need instruction here to pop from that stack twice
+
     	}
 
-        // NOTE: return value doesn't mean anything
         return val1;
     }
 
