@@ -34,6 +34,16 @@ if (stra == strb)
 {
     stra = "staristrue";
 }
+print("ThirdTest");
+print("stra");
+print(stra);
+print("strb");
+print(strb);
 
 int prec = 1 + 2 * 5;
 int paren = (1 + 2) * 5;
+print("FifthTest");
+print("prec");
+print(prec);
+print("paren");
+print(paren);

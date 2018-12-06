@@ -127,6 +127,8 @@ LABEL4:
 	getstatic	java/lang/System/out Ljava/io/PrintStream;
 	ldc	"SecondTest"
 	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
+
+; === while statement ===
 LABEL5:
 	getstatic	sample/b I
 	ldc	10
@@ -136,7 +138,7 @@ LABEL5:
 LABEL6:
 	ldc 1
 LABEL7:
-	ifne LABEL8
+	ifeq LABEL8
 	getstatic	sample/a I
 	ldc	1
 	iadd
@@ -179,6 +181,31 @@ LABEL11:
 	putstatic	sample/stra Ljava/lang/String;
 	goto LABEL12
 LABEL12:
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"ThirdTest"
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"stra"
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	getstatic	sample/stra Ljava/lang/String;
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"strb"
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	getstatic	sample/strb Ljava/lang/String;
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
 	ldc	1
 	ldc	2
 	ldc	5
@@ -191,6 +218,31 @@ LABEL12:
 	ldc	5
 	imul
 	putstatic	sample/paren I
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"FifthTest"
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"prec"
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	getstatic	sample/prec I
+	invokevirtual	java/io/PrintStream.println(I)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"paren"
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	getstatic	sample/paren I
+	invokevirtual	java/io/PrintStream.println(I)V
 
 ; === Emit the main program epilogue. === 
 

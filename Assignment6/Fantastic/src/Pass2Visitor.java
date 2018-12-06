@@ -92,25 +92,6 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         } else {
             jFile.println("\tinvokevirtual\tjava/io/PrintStream.println(Ljava/lang/String;)V");
         }
-
-
-
-        //getstatic    java/lang/System/out Ljava/io/PrintStream;
-        //ldc          "The square root of %4d is %8.4f\n"
-        //iconst_2
-        //anewarray    java/lang/Object
-        //dup
-        //iconst_0
-        //getstatic     FormatTest/n I
-        //invokestatic  java/lang/Integer.valueOf(I)Ljava/lang/Integer;
-        //aastore
-        //dup
-        //iconst_1
-        //getstatic     FormatTest/root F
-        //invokestatic  java/lang/Float.valueOf(F)Ljava/lang/Float;
-        //aastore
-        //invokevirtual  java/io/PrintStream.printf(
-        //                              Ljava/lang/String;[Ljava/lang/Object;)V
         return value;
     }
 
@@ -136,11 +117,12 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitWhileStat(FantasticParser.WhileStatContext ctx) {
+        jFile.println("\n; === while statement ===");
     	String startLabel = generateLabel();						
     	jFile.println(startLabel + ":");
     	Integer value = visit(ctx.expr());					//Get condition value by visiting the expr child
     	String exitLabel = generateLabel();
-    	jFile.println("\tifne " + exitLabel);				//check condition; 1 = exit loop, 0 = execute block
+    	jFile.println("\tifeq " + exitLabel);				//check condition; 1 = exit loop, 0 = execute block
     	visit(ctx.block());									
     	jFile.println("\tgoto " +  startLabel);				//jump back to the beginning of the loop
     	jFile.println(exitLabel + ":");						//create exitloop
@@ -195,7 +177,6 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         jFile.println("\tputstatic\t" + programName
                 +  "/" + ctx.variable().IDENTIFIER().toString()
                 + " " + typeIndicator);
-        //System.out.println("ctx.expr().getText(): " + ctx.expr().getText());
         // runtime stack to simulate actions for strings.
         if(!typeIndicator.equals("I")){
             stack.push(ctx.expr().getText());

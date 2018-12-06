@@ -12,7 +12,7 @@
 
 .field private static sec I
 
-; intn=3;
+; intn=8;
 
 .field private static n I
 
@@ -58,10 +58,12 @@
 	putstatic	fibonacci/fir I
 	ldc	1
 	putstatic	fibonacci/sec I
-	ldc	3
+	ldc	8
 	putstatic	fibonacci/n I
 	ldc	0
 	putstatic	fibonacci/i I
+
+; === while statement ===
 LABEL0:
 	getstatic	fibonacci/i I
 	getstatic	fibonacci/n I
@@ -71,13 +73,13 @@ LABEL0:
 LABEL1:
 	ldc 1
 LABEL2:
-	ifne LABEL3
+	ifeq LABEL3
 	getstatic	fibonacci/fir I
 	getstatic	fibonacci/sec I
 	iadd
 	putstatic	fibonacci/temp I
 	getstatic	fibonacci/sec I
-	putstatic	fibonacci/first I
+	putstatic	fibonacci/fir I
 	getstatic	fibonacci/temp I
 	putstatic	fibonacci/sec I
 	getstatic	fibonacci/i I
