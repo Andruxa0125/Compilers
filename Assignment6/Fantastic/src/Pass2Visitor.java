@@ -141,6 +141,20 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitFunc_decl_statement(FantasticParser.Func_decl_statementContext ctx) {
+    	//this one
+//    	String funcName = ctx.function_name().getText();
+//    	jFile.print(".method static " + funcName + "(");
+//    	// this will write bunch of I or something.
+//    	visit(ctx.params());
+//    	jFile.println(")");
+//    	if(ctx.return_type() != null) {
+//    		if(ctx.return_type().getText().equals("int")) {
+//    			jFile.println("I");
+//    		}
+//    		else if(ctx.return_type().getText().equals("string")) {
+//    			jFile.println("Ljava/lang/String;");
+//    		}
+//    	}
         return super.visitFunc_decl_statement(ctx);
     }
 

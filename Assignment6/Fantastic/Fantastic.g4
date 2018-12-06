@@ -8,6 +8,8 @@ grammar Fantastic;
 /** Parser rules */
 prog:   stat+ ; 
 
+local_var_declarations: (var_decl_statement NEWLINE)*; // for local declaratiobs in every scope.
+
 stat:   if_statement NEWLINE 				 # ifStat
 	|   expr SEMICOLON NEWLINE				 # printStat
 	|   var_decl_statement NEWLINE			 # varDeclStat
@@ -58,13 +60,11 @@ literal locals [ TypeSpec typeSpec = null ]
         ;
 func_call : function_name '(' args ')' ;
 
-params : ((type | ref_type) variable)? (',' (type | ref_type) variable)* ;
-
+params : (parameter)? (',' parameter)* ;
+parameter: type variable;
 args : (variable | literal)? (',' (variable | literal))* ;
 
-block : NEWLINE '{' NEWLINE stat* '}'                // full block
-      | NEWLINE stat                                 // simple block
-      ;
+block : NEWLINE '{' NEWLINE local_var_declarations stat* '}' ;               // full block
 
 /** Lexer rules below */
 
