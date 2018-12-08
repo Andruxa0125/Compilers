@@ -1,3 +1,5 @@
+import static wci.intermediate.symtabimpl.DefinitionImpl.VARIABLE;
+
 import java.io.PrintWriter;
 import java.util.Hashtable;
 import java.util.Stack;
@@ -11,7 +13,9 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     private PrintWriter jFile;
     private static int labelCount = 0;
     private static Stack<String> stack;
-    private static Hashtable<String, String> varValue;
+    //private SymTabStack symTabStack;
+    private Stack<LocalVariableMap> globalMap;
+    private Stack<Integer> localVariablesCount; 
     private static String generateLabel(){
     	labelCount++;
     	return "LABEL" + String.valueOf(labelCount - 1);
@@ -20,8 +24,12 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     {
         this.jFile = jFile;
         this.programName = programName;
-        this.stack = new Stack();
-        varValue = new Hashtable<String, String>();
+        stack = new Stack();
+        globalMap = new Stack<LocalVariableMap>();
+        localVariablesCount = new Stack<Integer>();
+        
+        globalMap.push(new LocalVariableMap());
+        localVariablesCount.push(0);
     }
 
     private void boolHelper(boolean expr){
@@ -117,6 +125,8 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitWhileStat(FantasticParser.WhileStatContext ctx) {
+    	localVariablesCount.push(0);
+    	
         jFile.println("\n; === while statement ===");
     	String startLabel = generateLabel();						
     	jFile.println(startLabel + ":");
@@ -126,6 +136,11 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     	visit(ctx.block());									
     	jFile.println("\tgoto " +  startLabel);				//jump back to the beginning of the loop
     	jFile.println(exitLabel + ":");						//create exitloop
+    	
+    	// deleting local variables.
+    	int localVarNum = localVariablesCount.pop();
+    	globalMap.peek().freeCells(localVarNum);
+    	
         return value;
     }
 
@@ -134,9 +149,14 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         return super.visitNewLineStat(ctx);
     }
 
-    @Override
+    // this decl is used only inside of new scopes.
     public Integer visitVar_decl_statement(FantasticParser.Var_decl_statementContext ctx) {
-        return super.visitVar_decl_statement(ctx);
+    	// runtime stack to simulate actions for strings.
+    	// if we declare a local variable that is String.
+    	String varName = ctx.variable().getText();
+    	String type = ctx.type().toString().equals("string") ? "S":"I";
+    	globalMap.peek().put(varName, new MemoryCell(null, type, true));
+        return -1;
     }
 
     @Override
@@ -161,20 +181,20 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     @Override
     public Integer visitDeclarationOver(FantasticParser.DeclarationOverContext ctx) {
         Integer value = visit(ctx.expr());
-
+        String varName = ctx.variable().IDENTIFIER().toString();
         String typeIndicator = (ctx.expr().typeSpec == Predefined.integerType) ? "I"
                 : (ctx.expr().typeSpec == Predefined.stringType)    ? "Ljava/lang/String;"
                 :                                    "?";
         // Emit a field put instruction.
         jFile.println("\tputstatic\t" + programName
-                +  "/" + ctx.variable().IDENTIFIER().toString()
+                +  "/" + varName
                 + " " + typeIndicator);
         
         // runtime stack to simulate actions for strings.
         if(!typeIndicator.equals("I")){
-            stack.push(ctx.expr().getText());
-            varValue.put(ctx.variable().IDENTIFIER().toString(),
-       		     ctx.expr().getText());
+        	// once we visit expression, we are going to leave the value on top of the stack.
+        	String val = stack.pop();
+        	globalMap.peek().put(varName, new MemoryCell(val, "S", false));
         }
         return value;
     }
@@ -182,26 +202,38 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     @Override
     public Integer visitAssignmentOver(FantasticParser.AssignmentOverContext ctx) {
         Integer value = visit(ctx.expr());
-
+        
+        String variableName = ctx.variable().IDENTIFIER().toString();
         String typeIndicator = (ctx.expr().typeSpec == Predefined.integerType) ? "I"
                 : (ctx.expr().typeSpec == Predefined.stringType)    ? "Ljava/lang/String;"
                 :                                    "?";
-
+        
+        MemoryCell cell = globalMap.peek().get(variableName);
+        if(cell != null && cell.isLocal()){
+        	int index = cell.getIndex();
+        	// it is int
+        	if(!cell.isString()){
+        		jFile.println("\tistore " + index);
+        	}
+        	// it is a string.
+        	else{
+        		jFile.println("\tastore " + index);
+                // we don't need stack for doing this operation.
+                stack.pop();
+        	}
+        	return -1;
+        }
+        
         // Emit a field put instruction.
         jFile.println("\tputstatic\t" + programName
-                +  "/" + ctx.variable().IDENTIFIER().toString()
+                +  "/" + variableName
                 + " " + typeIndicator);
-        // runtime stack to simulate actions for strings.
-        if(!typeIndicator.equals("I")){
-            stack.push(ctx.expr().getText());
-            varValue.put(ctx.variable().IDENTIFIER().toString(),
-            		     ctx.expr().getText());
-        }
         return value;
     }
 
     @Override
     public Integer visitIf_statement(FantasticParser.If_statementContext ctx) {
+    	localVariablesCount.push(0);
     	// this will leave 1 or 0 on top of the stack.
     	Integer val = visit(ctx.expr());
     	String trueLab = generateLabel();
@@ -231,8 +263,10 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
 
     			
     	jFile.println(nextLab + ":");
+    	
+    	int localVarNum = localVariablesCount.pop();
+    	globalMap.peek().freeCells(localVarNum);
     	return -1;
-        //return super.visitIf_statement(ctx);
     }
 
     @Override
@@ -334,7 +368,21 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     public Integer visitVar(FantasticParser.VarContext ctx) {
         String variableName = ctx.variable().IDENTIFIER().toString();
         TypeSpec type = ctx.typeSpec;
-
+        MemoryCell cell = globalMap.peek().get(variableName);
+        if(cell != null && cell.isLocal()){
+        	int index = cell.getIndex();
+        	// it is int
+        	if(!cell.isString()){
+        		jFile.println("\tiload " + index);
+        	}
+        	// it is a string.
+        	else{
+        		// push the value of the string.
+        		stack.push(cell.getValue());
+        		jFile.println("\taload " + index);
+        	}
+        	return -1;
+        }
         String typeIndicator = (type == Predefined.integerType) ? "I"
                 : (type == Predefined.stringType)    ? "Ljava/lang/String;"
                 :                                    "?";
@@ -342,12 +390,11 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         // Emit a field get instruction.
         jFile.println("\tgetstatic\t" + programName +
                 "/" + variableName + " " + typeIndicator);
-       
-        // must be a string
-        if(varValue.containsKey(variableName)){
-        	stack.push(varValue.get(variableName));
+        
+        // if it is a string and global variable.
+        if(typeIndicator.equals("Ljava/lang/String;")){
+        	stack.push(cell.getValue());
         }
-
         return visitChildren(ctx);
     }
 
@@ -358,19 +405,20 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitAddSubOver(FantasticParser.AddSubOverContext ctx) {
+    	int before = stack.size();
+    	boolean stringMode = false;
         Integer value = visitChildren(ctx);
 
         TypeSpec type1 = ctx.expr(0).typeSpec;
         TypeSpec type2 = ctx.expr(1).typeSpec;
-
-        boolean integerMode = (type1 == Predefined.integerType) && (type2 == Predefined.integerType);
-        boolean stringMode = (type1 == Predefined.stringType) && (type2 == Predefined.stringType);
+    	if(stack.size() > before)
+    		stringMode = true;
 
         String op = ctx.op.getText();
         String opcode = "";
 
         if (op.equals("+")) {
-            if (integerMode) {
+            if (!stringMode) {
                 opcode = "iadd";
             } else if (stringMode) {
                 String str1 = stack.pop().replace("\"", "");
@@ -378,11 +426,12 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
                 String concatOutput = str2 + str1;
                 concatOutput = "\"" + concatOutput + "\"";
                 jFile.println("\tldc\t" + concatOutput);
+                stack.push(concatOutput);
             } else {
                 opcode = "????";
             }
         } else {
-            opcode = integerMode ? "isub" : "????";
+            opcode = !stringMode ? "isub" : "????";
         }
 
         // Emit an add or subtract instruction.
