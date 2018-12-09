@@ -12,10 +12,14 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     String programName;
     private PrintWriter jFile;
     private static int labelCount = 0;
+    // this stack is used to simulate actions on strings.
     private static Stack<String> stack;
-    //private SymTabStack symTabStack;
+    // this is stack of activation records basically.
     private Stack<LocalVariableMap> globalMap;
+    // this counts how many variables are there in the scopes.
+    // different from globalMap because if, while scopes count here but not there.
     private Stack<Integer> localVariablesCount; 
+    
     private static String generateLabel(){
     	labelCount++;
     	return "LABEL" + String.valueOf(labelCount - 1);
@@ -149,12 +153,14 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         return super.visitNewLineStat(ctx);
     }
 
-    // this decl is used only inside of new scopes.
+    // this decl is used only inside of new scopes as local declarations.
     public Integer visitVar_decl_statement(FantasticParser.Var_decl_statementContext ctx) {
     	// runtime stack to simulate actions for strings.
     	// if we declare a local variable that is String.
     	String varName = ctx.variable().getText();
     	String type = ctx.type().toString().equals("string") ? "S":"I";
+    	// for local declarations you can't assign a value.
+    	// we might want to fix it later but doesn't matter really.
     	globalMap.peek().put(varName, new MemoryCell(null, type, true));
         return -1;
     }
@@ -179,6 +185,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     }
 
     @Override
+    // these variables will be private static in jasmin. So, global variables.
     public Integer visitDeclarationOver(FantasticParser.DeclarationOverContext ctx) {
         Integer value = visit(ctx.expr());
         String varName = ctx.variable().IDENTIFIER().toString();
@@ -191,7 +198,8 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
                 + " " + typeIndicator);
         
         // runtime stack to simulate actions for strings.
-        if(!typeIndicator.equals("I")){
+        // add the string to the globalMap.
+        if(!typeIndicator.equals("I")) {
         	// once we visit expression, we are going to leave the value on top of the stack.
         	String val = stack.pop();
         	globalMap.peek().put(varName, new MemoryCell(val, "S", false));
@@ -219,7 +227,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         	else{
         		jFile.println("\tastore " + index);
                 // we don't need stack for doing this operation.
-                stack.pop();
+                cell.setValue(stack.pop());
         	}
         	return -1;
         }
@@ -228,6 +236,12 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         jFile.println("\tputstatic\t" + programName
                 +  "/" + variableName
                 + " " + typeIndicator);
+        // it must be global.
+        cell = globalMap.get(0).get(variableName);
+        // check if it is a string. if yes, update its value.
+        if(cell.isString()){
+        	cell.setValue(stack.pop());
+        }
         return value;
     }
 
@@ -369,6 +383,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         String variableName = ctx.variable().IDENTIFIER().toString();
         TypeSpec type = ctx.typeSpec;
         MemoryCell cell = globalMap.peek().get(variableName);
+        // we will enter this if IF AND ONLY IF it is not a local variable.        
         if(cell != null && cell.isLocal()){
         	int index = cell.getIndex();
         	// it is int
@@ -393,9 +408,12 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         
         // if it is a string and global variable.
         if(typeIndicator.equals("Ljava/lang/String;")){
+        	// search at the bottom of the stack for global variables.
+        	LocalVariableMap global =  globalMap.get(0);
+        	cell = global.get(variableName);
         	stack.push(cell.getValue());
         }
-        return visitChildren(ctx);
+        return -1;
     }
 
     @Override

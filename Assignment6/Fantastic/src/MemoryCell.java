@@ -20,6 +20,9 @@ public class MemoryCell {
 	public String getValue(){
 		return value;
 	}
+	public void setValue(String val){
+		value = val;
+	}
 	// tests if it is a string.
 	public boolean isLocal(){
 		return local;
