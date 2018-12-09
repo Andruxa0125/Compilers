@@ -189,14 +189,14 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     public Integer visitDeclarationOver(FantasticParser.DeclarationOverContext ctx) {
         Integer value = visit(ctx.expr());
         String varName = ctx.variable().IDENTIFIER().toString();
-        String typeIndicator = (ctx.expr().typeSpec == Predefined.integerType) ? "I"
-                : (ctx.expr().typeSpec == Predefined.stringType)    ? "Ljava/lang/String;"
+        String typeIndicator = (ctx.type().getText().equals("int")) ? "I"
+                : (ctx.type().getText().equals("string"))    ? "Ljava/lang/String;"
                 :                                    "?";
         // Emit a field put instruction.
         jFile.println("\tputstatic\t" + programName
                 +  "/" + varName
                 + " " + typeIndicator);
-        
+        System.out.println("Type indicator is " + typeIndicator);
         // runtime stack to simulate actions for strings.
         // add the string to the globalMap.
         if(!typeIndicator.equals("I")) {
@@ -282,7 +282,29 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     	globalMap.peek().freeCells(localVarNum);
     	return -1;
     }
+    public Integer visitTernaryOpeOver(FantasticParser.TernaryOpeOverContext ctx) 
+    {
+    	// this is gonna leave a value on top of the stack.
+    	visit(ctx.expr(0));
+    	String trueLab = generateLabel();
+    	String falseLab = generateLabel();
+    	String nextLab = generateLabel();
+    	
+    	jFile.println("\tifne " + trueLab);
+    	jFile.println("\tgoto " + falseLab);	
 
+    	// TRUE label.
+    	// visits the true blocks and then jumps to next label block.
+    	jFile.println(trueLab + ":");
+    	Integer valTrueBlock = visit(ctx.expr(1));
+    	jFile.println("\tgoto " + nextLab);
+    	
+    	// FALSE label
+    	jFile.println(falseLab + ":");
+        Integer valFalseBlock = visit(ctx.expr(2));
+        jFile.println(nextLab + ":");
+    	return -1;
+    }
     @Override
     public Integer visitReturn_statement(FantasticParser.Return_statementContext ctx) {
         return super.visitReturn_statement(ctx);

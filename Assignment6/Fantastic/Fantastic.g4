@@ -51,6 +51,7 @@ expr locals [ TypeSpec typeSpec = null ]
     |   variable							# Var
     |   func_call							# FuncCall
     |   '(' expr ')'						# Parens
+    |  expr '?' expr ':' expr				# TernaryOpeOver
     ;
 
 variable : IDENTIFIER ;						
