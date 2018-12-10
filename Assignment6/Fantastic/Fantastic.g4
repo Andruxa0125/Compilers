@@ -26,7 +26,7 @@ func_decl_statement : FUNCTION (return_type)? function_name '(' params ')' block
 assignment_statement : type variable '=' expr SEMICOLON # declarationOver
                      | variable '=' expr SEMICOLON		# assignmentOver
                      ;
-if_statement: IF '(' expr ')' block (NEWLINE ELSE block)? ;
+if_statement: IF '(' expr ')' block (NEWLINE ELSE IF '(' expr ')' block)* (NEWLINE ELSE block)? ;
 return_statement : RETURN expr SEMICOLON;
 
 type : INT_TYPE
@@ -75,6 +75,7 @@ INT_TYPE_REF : 'int&' ;
 STRING_TYPE_REF : 'string&' ;
 
 IF          : 'if' ;
+ELIF		: 'else[ \t]+if';
 ELSE		: 'else';
 FUNCTION    : 'func' ;
 WHILE       : 'while' ;

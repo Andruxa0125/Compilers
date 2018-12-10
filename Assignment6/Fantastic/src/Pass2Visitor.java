@@ -1,6 +1,7 @@
 import static wci.intermediate.symtabimpl.DefinitionImpl.VARIABLE;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Stack;
 
@@ -239,7 +240,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         // it must be global.
         cell = globalMap.get(0).get(variableName);
         // check if it is a string. if yes, update its value.
-        if(cell.isString()){
+        if(cell != null && cell.isString()){
         	cell.setValue(stack.pop());
         }
         return value;
@@ -248,34 +249,36 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     @Override
     public Integer visitIf_statement(FantasticParser.If_statementContext ctx) {
     	localVariablesCount.push(0);
-    	// this will leave 1 or 0 on top of the stack.
-    	Integer val = visit(ctx.expr());
-    	String trueLab = generateLabel();
-    	String falseLab = "";
-    	boolean elseStatPres = ctx.children.size() > 5;
-    	if(elseStatPres)
-    		falseLab = generateLabel();
+    	int size = ctx.expr().size();
+    	ArrayList<String> labels = new ArrayList<String>(size);
+    	boolean elseStatPres = ctx.children.get(ctx.children.size() - 2).getText().equals("else");
+    	for(int i = 0; i < size; i++){
+    		// i-th true label
+    		labels.add(generateLabel());
+          	// this will leave 1 or 0 on top of the stack.
+        	Integer val = visit(ctx.expr(i));
+    		jFile.println("\tifne " + labels.get(i));
+    	}
+    	String elseLab = null;
     	String nextLab = generateLabel();
+    	if(elseStatPres){
+    		elseLab = generateLabel();
+    		jFile.println("\tgoto " + elseLab);
+    	}
+    	else
+    		jFile.println("\tgoto " + nextLab);
     	
-    	jFile.println("\tifne " + trueLab);
-    	if(elseStatPres)
-    		jFile.println("\tgoto " + falseLab);	
-    	jFile.println("\tgoto " + nextLab);
-    	
-    			
-    	// TRUE label.
-    	// visits the true blocks and then jumps to next label block.
-    	jFile.println(trueLab + ":");
-    	Integer valTrueBlock = visit(ctx.block(0));
-    	jFile.println("\tgoto " + nextLab);
-    			
-    	// FALSE label.
+    	// now the labels themselves.
+    	for(int i = 0; i < size; i++){
+    		jFile.println(labels.get(i) + ":");
+    		visit(ctx.block(i));
+    		jFile.println("\tgoto " + nextLab);
+    	}		
+    	// ELSE label.
         if (elseStatPres) {
-            jFile.println(falseLab + ":");
-            Integer valFalseBlock = visit(ctx.block(1));
-        }
-
-    			
+            jFile.println(elseLab + ":");
+            visit(ctx.block(size));
+        }	
     	jFile.println(nextLab + ":");
     	
     	int localVarNum = localVariablesCount.pop();
