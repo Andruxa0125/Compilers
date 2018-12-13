@@ -8,7 +8,7 @@ grammar Fantastic;
 /** Parser rules */
 prog:   stat+ ; 
 
-local_var_declarations: (var_decl_statement NEWLINE)*; // for local declaratiobs in every scope.
+local_var_declarations: (var_decl_statement NEWLINE)* ; // for local declaratiobs in every scope.
 
 stat:   if_statement NEWLINE 				 # ifStat
 	|   expr SEMICOLON NEWLINE				 # printStat

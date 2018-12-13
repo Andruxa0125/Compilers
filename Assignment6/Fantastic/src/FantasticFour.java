@@ -35,7 +35,7 @@ public class FantasticFour
 
         PrintWriter jFile = pass1.getAssemblyFile();
 
-        Pass2Visitor pass2 = new Pass2Visitor(jFile, programName);
+        Pass2Visitor pass2 = new Pass2Visitor(jFile, programName, pass1.getSymTabStack());
         pass2.visit(tree);
     }
 }

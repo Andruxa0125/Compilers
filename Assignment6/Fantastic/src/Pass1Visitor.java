@@ -46,6 +46,7 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
     
     public PrintWriter getAssemblyFile() { return jFile; }
 
+    public SymTabStack getSymTabStack() { return symTabStack; }
 
     @Override
     public Integer visitIfStat(FantasticParser.IfStatContext ctx) {
@@ -122,7 +123,10 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitFunc_decl_statement(FantasticParser.Func_decl_statementContext ctx) {
-        return super.visitFunc_decl_statement(ctx);
+    	if(ctx.function_name().getText().equals("main")) {
+    		return visitChildren(ctx);
+    	}
+        return 1;
     }
 
     @Override
@@ -215,8 +219,9 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
     public Integer visitVar(FantasticParser.VarContext ctx) {
         String variableName = ctx.variable().IDENTIFIER().toString();
         SymTabEntry variableId = symTabStack.lookup(variableName);
-
-        ctx.typeSpec = variableId.getTypeSpec();
+        if(variableId != null) {
+        	ctx.typeSpec = variableId.getTypeSpec();
+        }
         return visitChildren(ctx);
     }
 

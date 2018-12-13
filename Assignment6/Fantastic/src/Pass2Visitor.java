@@ -2,6 +2,7 @@ import static wci.intermediate.symtabimpl.DefinitionImpl.VARIABLE;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Stack;
 
@@ -21,22 +22,36 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     // different from globalMap because if, while scopes count here but not there.
     private Stack<Integer> localVariablesCount; 
     
+    private HashMap<String, String> functionMap;
+    
     private static String generateLabel(){
     	labelCount++;
     	return "LABEL" + String.valueOf(labelCount - 1);
     }
-    public Pass2Visitor(PrintWriter jFile, String programName)
+    public Pass2Visitor(PrintWriter jFile, String programName, SymTabStack symTabStack)
     {
         this.jFile = jFile;
         this.programName = programName;
         stack = new Stack();
         globalMap = new Stack<LocalVariableMap>();
         localVariablesCount = new Stack<Integer>();
-        
+        functionMap = new HashMap<String, String>();
         globalMap.push(new LocalVariableMap());
+        populateGlobalVariables(symTabStack);
         localVariablesCount.push(0);
     }
 
+    public void populateGlobalVariables(SymTabStack symTabStack) {
+    	SymTab table = symTabStack.getLocalSymTab();
+    	String entries = table.toString().substring(1, table.toString().length() - 1) + ", ";
+    	String[] arr = entries.split("=\\{\\}, ");
+    	for(int i = 0; i< arr.length; i++) {
+    		SymTabEntry var = symTabStack.lookup(arr[i]);
+    		TypeSpec spec = var.getTypeSpec();
+    		String type = (spec == Predefined.integerType) ? "I" : "S";
+    		globalMap.peek().put(arr[i], new MemoryCell(null, type, false));
+    	}
+    }
     private void boolHelper(boolean expr){
     	if(expr)
     		jFile.println("\tldc 1"); // push 1 if condition is true
@@ -59,32 +74,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         jFile.println(".end method");
 
         // Emit the main program header.
-        jFile.println("\n; === Emit the main method header. === \n");
-        jFile.println(".method public static main([Ljava/lang/String;)V");
-        jFile.println("\n; === Emit the main method prologue. === \n");
-        jFile.println("\tnew RunTimer");
-        jFile.println("\tdup");
-        jFile.println("\tinvokenonvirtual RunTimer/<init>()V");
-        jFile.println("\tputstatic        " + programName + "/_runTimer LRunTimer;");
-        jFile.println("\tnew PascalTextIn");
-        jFile.println("\tdup");
-        jFile.println("\tinvokenonvirtual PascalTextIn/<init>()V");
-        jFile.println("\tputstatic        " + programName + "/_standardIn LPascalTextIn;");
-
-        jFile.println("\n; === Emit the code for statements in the main program. === \n");
         Integer value = visitChildren(ctx);
-
-        // Emit the main program epilogue.
-        jFile.println("\n; === Emit the main program epilogue. === \n");
-        jFile.println();
-        jFile.println("\tgetstatic     " + programName + "/_runTimer LRunTimer;");
-        jFile.println("\tinvokevirtual RunTimer.printElapsedTime()V");
-        jFile.println();
-        jFile.println("\treturn");
-        jFile.println();
-        jFile.println(".limit locals 16");
-        jFile.println(".limit stack 16");
-        jFile.println(".end method");
 
         jFile.close();
         return value;
@@ -168,21 +158,78 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitFunc_decl_statement(FantasticParser.Func_decl_statementContext ctx) {
-    	//this one
-//    	String funcName = ctx.function_name().getText();
-//    	jFile.print(".method static " + funcName + "(");
-//    	// this will write bunch of I or something.
-//    	visit(ctx.params());
-//    	jFile.println(")");
-//    	if(ctx.return_type() != null) {
-//    		if(ctx.return_type().getText().equals("int")) {
-//    			jFile.println("I");
-//    		}
-//    		else if(ctx.return_type().getText().equals("string")) {
-//    			jFile.println("Ljava/lang/String;");
-//    		}
-//    	}
-        return super.visitFunc_decl_statement(ctx);
+    	String funcName = ctx.function_name().getText();
+    	if(!funcName.equals("main")) {
+    		LocalVariableMap local = new LocalVariableMap();	//push a new map on to stack
+    		globalMap.push(local);								//this creates new scope
+    		localVariablesCount.push(0);						//push the localVariableCount 0
+
+    		jFile.println("\n; === Emit the " + funcName + " function declaration. === \n");
+    		jFile.println();
+
+    		String functionSig = "(";
+    		jFile.print(".method private static " + funcName + "(");
+    		//    	// this will write bunch of I or something.
+
+    		int size = visit(ctx.params());						//we have to put String "I" onto functionmap
+    		while(size > 0) {
+    			functionSig += "I";
+    			size--;
+    		}
+
+    		jFile.print(")");
+    		functionSig += ")";
+
+    		if(ctx.return_type() != null) {						//printing return type to jFile
+    			if(ctx.return_type().getText().equals("int")) {
+    				jFile.println("I");
+    				functionSig += "I";
+    			}
+    			else if(ctx.return_type().getText().equals("string")) {
+    				jFile.println("Ljava/lang/String;");
+    			}
+    		}
+
+    		functionMap.put(funcName, functionSig);				//put the function onto map
+
+    		visit(ctx.block());									//the block method parses the statements;
+
+    		globalMap.pop();
+    		int localSize = localVariablesCount.pop();
+    		jFile.println();
+    		jFile.println(".limit locals " + localSize);
+    		jFile.println(".limit stack 16");
+    		jFile.println(".end method");
+    	}
+    	else {
+            // Emit the main program header.
+            jFile.println("\n; === Emit the main method header. === \n");
+            jFile.println(".method public static main([Ljava/lang/String;)V");
+            jFile.println("\n; === Emit the main method prologue. === \n");
+            jFile.println("\tnew RunTimer");
+            jFile.println("\tdup");
+            jFile.println("\tinvokenonvirtual RunTimer/<init>()V");
+            jFile.println("\tputstatic        " + programName + "/_runTimer LRunTimer;");
+            jFile.println("\tnew PascalTextIn");
+            jFile.println("\tdup");
+            jFile.println("\tinvokenonvirtual PascalTextIn/<init>()V");
+            jFile.println("\tputstatic        " + programName + "/_standardIn LPascalTextIn;");
+
+            jFile.println("\n; === Emit the code for statements in the main program. === \n");
+            visit(ctx.block());
+            // Emit the main program epilogue.
+            jFile.println("\n; === Emit the main program epilogue. === \n");
+            jFile.println();
+            jFile.println("\tgetstatic     " + programName + "/_runTimer LRunTimer;");
+            jFile.println("\tinvokevirtual RunTimer.printElapsedTime()V");
+            jFile.println();
+            jFile.println("\treturn");
+            jFile.println();
+            jFile.println(".limit locals 16");
+            jFile.println(".limit stack 16");
+            jFile.println(".end method");
+    	}
+        return 1;
     }
 
     @Override
@@ -528,12 +575,53 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
 
     @Override
     public Integer visitFunc_call(FantasticParser.Func_callContext ctx) {
-        return super.visitFunc_call(ctx);
+    	jFile.println("\n; === Emit the code for function calls. === \n");
+    	String funcName = ctx.function_name().getText();
+    	if(ctx.args().getChild(0) != null) {		//there is a parameter
+    		int size = 0;
+    		while(ctx.args().getChild(size) != null) {
+    			String args = ctx.args().getText();
+    			ctx.args().getRuleContext().getText();
+    			if(!args.equals(",")) {				//there is a value
+    				try {							//check if args is an integer
+    					int value = Integer.parseInt(args);
+    					jFile.println("\tldc " + value);
+    				} catch (NumberFormatException ex) {		//else it is a variable
+    					MemoryCell cell = globalMap.peek().get(args);
+    					if(cell != null && cell.isLocal()) {		//its a local variable
+    						int index = cell.getIndex();
+    						jFile.println("\tiload " + index);
+    					}
+    					else {										//this assumes that if it is not local variable then it MUST be global variable
+    						cell = globalMap.get(0).get(args);
+    						//String type = cell.isString() ? "S" : "I";
+    						jFile.println("\tgetstatic\t" + programName + "/" + args + " " + "I");
+    					}
+    				}
+    			}
+        		size++;
+    		}
+    	}
+    	jFile.println("\tinvokestatic " + programName + "/" + funcName + functionMap.get(funcName));
+    	
+        return -1;
+    	
     }
 
     @Override
     public Integer visitParams(FantasticParser.ParamsContext ctx) {
-        return super.visitParams(ctx);
+    	int size = ctx.parameter().size();			//the number of parameters
+    	for(int i = 0 ; i < size; i++) {
+    		String paramType = ctx.parameter(i).type().toString().equals("string") ? "S":"I";
+    		String paramName = ctx.parameter(i).variable().getText();
+    		jFile.print(paramType);
+    		if(paramType == "I") {
+    			globalMap.peek().put(paramName, new MemoryCell(null, paramType, true));
+    			int localSize = localVariablesCount.pop();
+    			localVariablesCount.push(++localSize);
+    		}
+    	}
+    	return size;
     }
 
     @Override
