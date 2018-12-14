@@ -8,7 +8,7 @@ grammar Fantastic;
 /** Parser rules */
 prog:   stat+ ; 
 
-local_var_declarations: (var_decl_statement NEWLINE)* ; // for local declaratiobs in every scope.
+local_var_declarations: (var_decl_statement NEWLINE)*; // for local declaratiobs in every scope.
 
 stat:   if_statement NEWLINE 				 # ifStat
 	|   expr SEMICOLON NEWLINE				 # printStat
@@ -18,6 +18,8 @@ stat:   if_statement NEWLINE 				 # ifStat
     |   return_statement NEWLINE			 # returnStat
     |   WHILE '(' expr ')' block NEWLINE	 # whileStat
     |   PRINT '(' expr ')' SEMICOLON NEWLINE # printStat
+    |   add_sub_short NEWLINE				 # shortAddSub
+    |	add_sub_short_scalar NEWLINE		 # shortAddSubMulDivScalar
     |   NEWLINE								 # newLineStat
     ;
 
@@ -42,6 +44,8 @@ ref_type : INT_TYPE_REF
          ;
 
 
+add_sub_short: variable op=('++'|'--') SEMICOLON;
+add_sub_short_scalar: variable op=('+='|'-='|'*='|'/=') expr SEMICOLON;
 
 expr locals [ TypeSpec typeSpec = null ]
     :   expr op=('*'|'/'|'%') expr				# MulDivPercOver
@@ -53,6 +57,7 @@ expr locals [ TypeSpec typeSpec = null ]
     |   '(' expr ')'						# Parens
     |  expr '?' expr ':' expr				# TernaryOpeOver
     ;
+
 
 variable : IDENTIFIER ;						
 literal locals [ TypeSpec typeSpec = null ]
@@ -81,7 +86,8 @@ FUNCTION    : 'func' ;
 WHILE       : 'while' ;
 RETURN      : 'return' ;
 PRINT       : 'print' ;
-
+ADDADD		: '++';
+SUBSUB		: '--';
 MUL			: '*';
 ADD			: '+';
 SUB			: '-';
