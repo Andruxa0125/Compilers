@@ -24,6 +24,19 @@
 
 .field private static e I
 
+; === Emit the class constructor. === 
+
+
+.method public <init>()V
+
+	aload_0
+	invokenonvirtual    java/lang/Object/<init>()V
+	return
+
+.limit locals 1
+.limit stack 1
+.end method
+
 ; === Emit the main method header. === 
 
 .method public static main([Ljava/lang/String;)V
@@ -61,6 +74,56 @@
 	ldc	3
 	irem
 	putstatic	add_sub_mul_div_sample/e I
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"--Printing a: a should be 2--"
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	getstatic	add_sub_mul_div_sample/a I
+	invokevirtual	java/io/PrintStream.println(I)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"--Printing b: b should be 1--"
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	getstatic	add_sub_mul_div_sample/b I
+	invokevirtual	java/io/PrintStream.println(I)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"--Printing c: c should be 4--"
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	getstatic	add_sub_mul_div_sample/c I
+	invokevirtual	java/io/PrintStream.println(I)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"--Printing d: d should be 2--"
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	getstatic	add_sub_mul_div_sample/d I
+	invokevirtual	java/io/PrintStream.println(I)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"--Printing e: e should be 0--"
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	getstatic	add_sub_mul_div_sample/e I
+	invokevirtual	java/io/PrintStream.println(I)V
 
 ; === Emit the main program epilogue. === 
 
