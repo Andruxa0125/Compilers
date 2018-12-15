@@ -486,7 +486,82 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         }
         return -1;
     }
-
+    // a++ or a--
+    public Integer visitAdd_sub_short(FantasticParser.Add_sub_shortContext ctx)
+    { 
+    	String variableName = ctx.variable().IDENTIFIER().toString();
+    	String op = ctx.op.getText();
+        MemoryCell cell = globalMap.peek().get(variableName);
+        if(cell != null && cell.isLocal()){
+        	int index = cell.getIndex();
+        	// it is int
+        	if(!cell.isString()){
+        		if(op.equals("++"))
+        		{
+        			jFile.println("\tiinc " + String.valueOf(index) + " 1");
+        		}
+        		else if(op.equals("--"))
+        		{
+        			jFile.println("\tiinc " + String.valueOf(index) + " -1");
+        		}
+        	}
+        	return -1;
+        }
+        //must be global int.
+        jFile.println("\tgetstatic\t" + programName +
+                "/" + variableName + " I");
+        if(op.equals("++"))
+        	jFile.println("\tldc 1");
+        else if(op.equals("--"))
+        	jFile.println("\tldc -1");
+        jFile.println("\tiadd");
+        jFile.println("\tputstatic\t" + programName +
+                "/" + variableName + " I");
+        return -1;
+    }
+    
+    public Integer visitAdd_sub_short_scalar(FantasticParser.Add_sub_short_scalarContext ctx) 
+    { 
+    	String variableName = ctx.variable().IDENTIFIER().toString();
+    	String op = ctx.op.getText();
+        MemoryCell cell = globalMap.peek().get(variableName);
+        if(cell != null && cell.isLocal()){
+        	int index = cell.getIndex();
+        	// it is int
+        	if(!cell.isString()){
+        		jFile.println("\tiload " + String.valueOf(index));
+        		visit(ctx.expr());// to load the expression on stack
+        		if(op.equals("+="))
+        			jFile.println("\tiadd");
+        		else if(op.equals("-="))
+        			jFile.println("\tisub");
+        		else if(op.equals("/="))
+        			jFile.println("\tidiv");
+        		else if(op.equals("*="))
+        			jFile.println("\timul");
+        		jFile.println("\tistore " + String.valueOf(index));
+        	}
+        	return -1;
+        }
+        //must be global int.
+        jFile.println("\tgetstatic\t" + programName +
+                "/" + variableName + " I");
+        visit(ctx.expr());// to load the expression on stack
+        
+		if(op.equals("+="))
+			jFile.println("\tiadd");
+		else if(op.equals("-="))
+			jFile.println("\tisub");
+		else if(op.equals("/="))
+			jFile.println("\tidiv");
+		else if(op.equals("*="))
+			jFile.println("\timul");
+		
+        jFile.println("\tputstatic\t" + programName +
+                "/" + variableName + " I");
+        return -1;
+    }
+    
     @Override
     public Integer visitParens(FantasticParser.ParensContext ctx) {
         return super.visitParens(ctx);
