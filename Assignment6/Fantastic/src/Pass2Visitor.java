@@ -157,6 +157,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     @Override
     public Integer visitFunc_decl_statement(FantasticParser.Func_decl_statementContext ctx) {
     	String funcName = ctx.function_name().getText();
+    	boolean voidFlag = false;
     	if(!funcName.equals("main")) {
     		LocalVariableMap local = new LocalVariableMap();	//push a new map on to stack
     		globalMap.push(local);								//this creates new scope
@@ -187,11 +188,19 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     				jFile.println("Ljava/lang/String;");
     			}
     		}
+    		else {
+    			jFile.println("V");
+    			functionSig += "V";
+    			voidFlag = true;
+    		}
 
     		functionMap.put(funcName, functionSig);				//put the function onto map
 
     		visit(ctx.block());									//the block method parses the statements;
 
+    		if(voidFlag) {
+    			jFile.println("\treturn");
+    		}
     		globalMap.pop();
     		int localSize = localVariablesCount.pop();
     		jFile.println();
