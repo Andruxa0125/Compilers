@@ -11,7 +11,7 @@ prog:   stat+ ;
 local_var_declarations: (var_decl_statement NEWLINE)*; // for local declaratiobs in every scope.
 
 stat:   if_statement NEWLINE 				 # ifStat
-	|   expr SEMICOLON NEWLINE				 # printStat
+	|   expr SEMICOLON NEWLINE				 # exprStat
 	|   var_decl_statement NEWLINE			 # varDeclStat
 	|   func_decl_statement NEWLINE			 # funcDeclStat
     |   assignment_statement NEWLINE		 # assignStat
@@ -29,7 +29,7 @@ assignment_statement : type variable '=' expr SEMICOLON # declarationOver
                      | variable '=' expr SEMICOLON		# assignmentOver
                      ;
 if_statement: IF '(' expr ')' block (NEWLINE ELSE IF '(' expr ')' block)* (NEWLINE ELSE block)? ;
-return_statement : RETURN expr SEMICOLON;
+return_statement : RETURN expr SEMICOLON 				# returnOver;
 
 type : INT_TYPE
 	 | STRING_TYPE

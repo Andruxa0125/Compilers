@@ -43,13 +43,16 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
 
     public void populateGlobalVariables(SymTabStack symTabStack) {
     	SymTab table = symTabStack.getLocalSymTab();
-    	String entries = table.toString().substring(1, table.toString().length() - 1) + ", ";
-    	String[] arr = entries.split("=\\{\\}, ");
-    	for(int i = 0; i< arr.length; i++) {
-    		SymTabEntry var = symTabStack.lookup(arr[i]);
-    		TypeSpec spec = var.getTypeSpec();
-    		String type = (spec == Predefined.integerType) ? "I" : "S";
-    		globalMap.peek().put(arr[i], new MemoryCell(null, type, false));
+    	String entries = table.toString();
+    	if(!entries.equals("{}")) {		
+    		entries = table.toString().substring(1, table.toString().length() - 1) + ", ";
+    		String[] arr = entries.split("=\\{\\}, ");
+    		for(int i = 0; i< arr.length; i++) {
+    			SymTabEntry var = symTabStack.lookup(arr[i]);
+    			TypeSpec spec = var.getTypeSpec();
+    			String type = (spec == Predefined.integerType) ? "I" : "S";
+    			globalMap.peek().put(arr[i], new MemoryCell(null, type, false));
+    		}
     	}
     }
     private void boolHelper(boolean expr){
@@ -96,11 +99,6 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
             jFile.println("\tinvokevirtual\tjava/io/PrintStream.println(Ljava/lang/String;)V");
         }
         return value;
-    }
-
-    @Override
-    public Integer visitVarDeclStat(FantasticParser.VarDeclStatContext ctx) {
-        return super.visitVarDeclStat(ctx);
     }
 
     @Override
@@ -197,7 +195,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     		globalMap.pop();
     		int localSize = localVariablesCount.pop();
     		jFile.println();
-    		jFile.println(".limit locals " + localSize);
+    		jFile.println(".limit locals 16");
     		jFile.println(".limit stack 16");
     		jFile.println(".end method");
     	}
@@ -244,6 +242,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         jFile.println("\tputstatic\t" + programName
                 +  "/" + varName
                 + " " + typeIndicator);
+        System.out.println("Type indicator is " + typeIndicator);
         // runtime stack to simulate actions for strings.
         // add the string to the globalMap.
         if(!typeIndicator.equals("I")) {
@@ -354,10 +353,8 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         jFile.println(nextLab + ":");
     	return -1;
     }
-    @Override
-    public Integer visitReturn_statement(FantasticParser.Return_statementContext ctx) {
-        return super.visitReturn_statement(ctx);
-    }
+
+   
 
     @Override
     public Integer visitType(FantasticParser.TypeContext ctx) {
@@ -561,7 +558,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
                 "/" + variableName + " I");
         return -1;
     }
-    
+
     @Override
     public Integer visitParens(FantasticParser.ParensContext ctx) {
         return super.visitParens(ctx);
@@ -589,8 +586,11 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
                 String str2 = stack.pop().replace("\"", "");
                 String concatOutput = str2 + str1;
                 concatOutput = "\"" + concatOutput + "\"";
+                jFile.println("\tpop");
+                jFile.println("\tpop");
                 jFile.println("\tldc\t" + concatOutput);
                 stack.push(concatOutput);
+
             } else {
                 opcode = "????";
             }
@@ -630,6 +630,11 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         return value;
     }
 
+    public Integer visitReturnOver(FantasticParser.ReturnOverContext ctx) {
+    	visit(ctx.expr());
+    	jFile.println("\tireturn");
+    	return 1; 
+    }
     @Override
     public Integer visitIntLitOver(FantasticParser.IntLitOverContext ctx) {
         // Emit a load constant instruction.
@@ -644,7 +649,7 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         jFile.println("\tldc\t" + txt);
         // code to support operations on strings.
         stack.push(txt);
-        return visitChildren(ctx);
+        return 1;
     }
 
     @Override

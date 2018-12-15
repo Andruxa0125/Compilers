@@ -59,10 +59,6 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
         return super.visitPrintStat(ctx);
     }
 
-    @Override
-    public Integer visitVarDeclStat(FantasticParser.VarDeclStatContext ctx) {
-        return super.visitVarDeclStat(ctx);
-    }
 
     @Override
     public Integer visitFuncDeclStat(FantasticParser.FuncDeclStatContext ctx) {
@@ -171,11 +167,6 @@ public class Pass1Visitor extends FantasticBaseVisitor<Integer>
     @Override
     public Integer visitIf_statement(FantasticParser.If_statementContext ctx) {
         return super.visitIf_statement(ctx);
-    }
-
-    @Override
-    public Integer visitReturn_statement(FantasticParser.Return_statementContext ctx) {
-        return super.visitReturn_statement(ctx);
     }
 
     @Override
