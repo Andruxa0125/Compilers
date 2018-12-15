@@ -99,7 +99,7 @@ GET			: '>=';
 EQ			: '==';
 IDENTIFIER  : [a-zA-Z]+;             // match identifiers <label id="code.tour.expr.3"/>
 INT_LITERAL :   [0-9]+ ;
-STRING_LITERAL : '"'[a-zA-Z0-9]*'"';
+STRING_LITERAL : '"' ~('\r' | '\n' | '"')* '"' ;
 NEWLINE     : '\r'? '\n' ;            // return newlines to parser (is end-statement signal)
 WS          : [ \t]+ -> skip ;        // toss out whitespace
 SEMICOLON   : ';' ;
