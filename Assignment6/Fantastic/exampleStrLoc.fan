@@ -1,14 +1,22 @@
-string a = "a";
-string b = "b";
-if(b > a)
+func main()
 {
-	string c;
-	c = a + b;
-	if(c > a)
+	int i;
+	i = 0;
+	string first = "Hello";
+	string second = "World";
+	if(first > second)
 	{
-		c = "c";
+		string d;
+		d= "";
+		d= first + second;
+		print(d);
 	}
-	print(c);
+	else
+	{
+	   	string r;
+		r ="";
+		r = second + first;
+		print(r);
+	}
+	second = second + "!";
 }
-
-

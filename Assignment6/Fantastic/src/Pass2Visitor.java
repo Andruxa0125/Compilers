@@ -147,7 +147,9 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     	// runtime stack to simulate actions for strings.
     	// if we declare a local variable that is String.
     	String varName = ctx.variable().getText();
-    	String type = ctx.type().toString().equals("string") ? "S":"I";
+    	String type = ctx.type().getText().equals("string") ? "S":"I";
+//    	System.out.println("varName "+ varName + " is " + type);
+//    	System.out.println("ctx "+ ctx.getText().toString());
     	// for local declarations you can't assign a value.
     	// we might want to fix it later but doesn't matter really.
     	globalMap.peek().put(varName, new MemoryCell(null, type, true));
@@ -287,12 +289,15 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         	return -1;
         }
         
+        // check global
+        cell = globalMap.get(0).get(variableName);
+        if(typeIndicator == "?"){
+        	typeIndicator = cell.getType();
+        }
         // Emit a field put instruction.
         jFile.println("\tputstatic\t" + programName
                 +  "/" + variableName
                 + " " + typeIndicator);
-        // it must be global.
-        cell = globalMap.get(0).get(variableName);
         // check if it is a string. if yes, update its value.
         if(cell != null && cell.isString()){
         	cell.setValue(stack.pop());
@@ -478,7 +483,11 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         String typeIndicator = (type == Predefined.integerType) ? "I"
                 : (type == Predefined.stringType)    ? "Ljava/lang/String;"
                 :                                    "?";
-
+        cell = globalMap.get(0).get(variableName);
+        if (typeIndicator.equals("?") && cell != null) {
+        	typeIndicator = (cell.getType() == "I") ? "I" 
+        			: (cell.getType() == "S") ? "S" : "?";
+        }
         // Emit a field get instruction.
         jFile.println("\tgetstatic\t" + programName +
                 "/" + variableName + " " + typeIndicator);
@@ -665,9 +674,11 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
     public Integer visitFunc_call(FantasticParser.Func_callContext ctx) {
     	jFile.println("\n; === Emit the code for function calls. === \n");
     	String funcName = ctx.function_name().getText();
-    	if(ctx.args().getChild(0) != null) {		//there is a parameter
+    	String funcSig = functionMap.get(funcName);
+    	String parameterType = funcSig.substring(funcSig.indexOf("(") + 1, funcSig.indexOf(")"));
+    	if(ctx.args().getChild(0) != null && !parameterType.equals("")) {		//there is a parameter
     		int size = 0;
-    		while(ctx.args().getChild(size) != null) {
+    		while(ctx.args().getChild(size) != null && !parameterType.equals("")) {
     			String args = ctx.args().getText();
     			ctx.args().getRuleContext().getText();
     			if(!args.equals(",")) {				//there is a value

@@ -1,19 +1,30 @@
-func int bla(int g)
+func int gla()
+{
+	int j;
+	j = 6;
+	j = i;
+}
+func int bla()
 {
 	int i;
-	i=0;
-	while(i<10)
-	{
-		g = g + 1;
-		i = i + 1;
-	}
-	return g;
+	i = 5;
+	i = gla();
+	return i;
 }
-
 func main()
 {
+	int j = 5;
+	while(j < 10)
+	{
+		int b;
+		b = 20 + j;
+		print(b);
+		j = j + 1;
+	}
+	print(j);
+	int a;
+	a = gla();
 	
-	int a = bla(5);
 	print(a);
 }
 

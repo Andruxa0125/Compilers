@@ -12,7 +12,6 @@ local_var_declarations: (var_decl_statement NEWLINE)*; // for local declaratiobs
 
 stat:   if_statement NEWLINE 				 # ifStat
 	|   expr SEMICOLON NEWLINE				 # exprStat
-	|   var_decl_statement NEWLINE			 # varDeclStat
 	|   func_decl_statement NEWLINE			 # funcDeclStat
     |   assignment_statement NEWLINE		 # assignStat
     |   return_statement NEWLINE			 # returnStat
