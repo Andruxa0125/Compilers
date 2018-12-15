@@ -4,7 +4,15 @@
 .field private static _runTimer LRunTimer;
 .field private static _standardIn LPascalTextIn;
 
-; inta=bla(5);
+; intj=5;
+
+.field private static j I
+
+; intb;
+
+.field private static b I
+
+; inta;
 
 .field private static a I
 
@@ -21,34 +29,32 @@
 .limit stack 1
 .end method
 
+; === Emit the gla function declaration. === 
+
+
+.method private static gla()I
+	ldc	6
+	istore 0
+	getstatic	func_sample/i ?
+	istore 0
+	iload 0
+	ireturn
+
+.limit locals 16
+.limit stack 16
+.end method
+
 ; === Emit the bla function declaration. === 
 
 
-.method private static bla(I)I
-	ldc	0
-	istore 1
-
-; === while statement ===
-LABEL0:
-	iload 1
-	ldc	10
-	if_icmplt LABEL1
-	ldc 0
-	goto LABEL2
-LABEL1:
-	ldc 1
-LABEL2:
-	ifeq LABEL3
-	iload 0
-	ldc	1
-	iadd
+.method private static bla()I
+	ldc	5
 	istore 0
-	iload 1
-	ldc	1
-	iadd
-	istore 1
-	goto LABEL0
-LABEL3:
+
+; === Emit the code for function calls. === 
+
+	invokestatic func_sample/gla()I
+	istore 0
 	iload 0
 	ireturn
 
@@ -73,16 +79,49 @@ LABEL3:
 
 ; === Emit the code for statements in the main program. === 
 
+	ldc	5
+	putstatic	func_sample/j I
 
-; === Emit the code for function calls. === 
-
-	ldc 5
-	invokestatic func_sample/bla(I)I
-	putstatic	func_sample/a I
+; === while statement ===
+LABEL0:
+	getstatic	func_sample/j I
+	ldc	10
+	if_icmplt LABEL1
+	ldc 0
+	goto LABEL2
+LABEL1:
+	ldc 1
+LABEL2:
+	ifeq LABEL3
+	ldc	20
+	getstatic	func_sample/j I
+	iadd
+	istore 3
 
 ; === Print statement. ===
 	getstatic	java/lang/System/out Ljava/io/PrintStream;
-	getstatic	func_sample/a I
+	iload 3
+	invokevirtual	java/io/PrintStream.println(I)V
+	getstatic	func_sample/j I
+	ldc	1
+	iadd
+	putstatic	func_sample/j I
+	goto LABEL0
+LABEL3:
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	getstatic	func_sample/j I
+	invokevirtual	java/io/PrintStream.println(I)V
+
+; === Emit the code for function calls. === 
+
+	invokestatic func_sample/gla()I
+	istore 4
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	iload 4
 	invokevirtual	java/io/PrintStream.println(I)V
 
 ; === Emit the main program epilogue. === 
