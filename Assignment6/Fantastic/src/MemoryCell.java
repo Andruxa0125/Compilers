@@ -27,6 +27,9 @@ public class MemoryCell {
 	public boolean isLocal(){
 		return local;
 	}
+	public String getType() {
+		return type;
+	}
 	// tests if it is local.
 	public boolean isString(){
 		return type.equals("S");
