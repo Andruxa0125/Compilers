@@ -269,7 +269,6 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         jFile.println("\tputstatic\t" + programName
                 +  "/" + varName
                 + " " + typeIndicator);
-        System.out.println("Type indicator is " + typeIndicator);
         // runtime stack to simulate actions for strings.
         // add the string to the globalMap.
         if(!typeIndicator.equals("I")) {

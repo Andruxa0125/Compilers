@@ -265,16 +265,29 @@ public class FantasticParser extends Parser {
 		}
 	}
 	public static class PrintStatContext extends StatContext {
+		public TerminalNode PRINT() { return getToken(FantasticParser.PRINT, 0); }
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
 		}
 		public TerminalNode SEMICOLON() { return getToken(FantasticParser.SEMICOLON, 0); }
 		public TerminalNode NEWLINE() { return getToken(FantasticParser.NEWLINE, 0); }
-		public TerminalNode PRINT() { return getToken(FantasticParser.PRINT, 0); }
 		public PrintStatContext(StatContext ctx) { copyFrom(ctx); }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof FantasticVisitor ) return ((FantasticVisitor<? extends T>)visitor).visitPrintStat(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprStatContext extends StatContext {
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public TerminalNode SEMICOLON() { return getToken(FantasticParser.SEMICOLON, 0); }
+		public TerminalNode NEWLINE() { return getToken(FantasticParser.NEWLINE, 0); }
+		public ExprStatContext(StatContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof FantasticVisitor ) return ((FantasticVisitor<? extends T>)visitor).visitExprStat(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -370,7 +383,7 @@ public class FantasticParser extends Parser {
 				}
 				break;
 			case 2:
-				_localctx = new PrintStatContext(_localctx);
+				_localctx = new ExprStatContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(60);
@@ -816,18 +829,26 @@ public class FantasticParser extends Parser {
 	}
 
 	public static class Return_statementContext extends ParserRuleContext {
+		public Return_statementContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_return_statement; }
+	 
+		public Return_statementContext() { }
+		public void copyFrom(Return_statementContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class ReturnOverContext extends Return_statementContext {
 		public TerminalNode RETURN() { return getToken(FantasticParser.RETURN, 0); }
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
 		}
 		public TerminalNode SEMICOLON() { return getToken(FantasticParser.SEMICOLON, 0); }
-		public Return_statementContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_return_statement; }
+		public ReturnOverContext(Return_statementContext ctx) { copyFrom(ctx); }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof FantasticVisitor ) return ((FantasticVisitor<? extends T>)visitor).visitReturn_statement(this);
+			if ( visitor instanceof FantasticVisitor ) return ((FantasticVisitor<? extends T>)visitor).visitReturnOver(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -836,6 +857,7 @@ public class FantasticParser extends Parser {
 		Return_statementContext _localctx = new Return_statementContext(_ctx, getState());
 		enterRule(_localctx, 14, RULE_return_statement);
 		try {
+			_localctx = new ReturnOverContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(149);

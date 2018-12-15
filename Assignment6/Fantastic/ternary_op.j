@@ -1,14 +1,14 @@
-.class public declaration_sample
+.class public ternary_op
 .super java/lang/Object
 
 .field private static _runTimer LRunTimer;
 .field private static _standardIn LPascalTextIn;
 
-; inta;
+; inta=9;
 
 .field private static a I
 
-; intb=1;
+; intb=a>5?4:3;
 
 .field private static b I
 
@@ -34,43 +34,48 @@
 	new RunTimer
 	dup
 	invokenonvirtual RunTimer/<init>()V
-	putstatic        declaration_sample/_runTimer LRunTimer;
+	putstatic        ternary_op/_runTimer LRunTimer;
 	new PascalTextIn
 	dup
 	invokenonvirtual PascalTextIn/<init>()V
-	putstatic        declaration_sample/_standardIn LPascalTextIn;
+	putstatic        ternary_op/_standardIn LPascalTextIn;
 
 ; === Emit the code for statements in the main program. === 
 
-	ldc	1
-	putstatic	declaration_sample/b I
-	ldc	10
-	istore 2
+	ldc	9
+	putstatic	ternary_op/a I
+	getstatic	ternary_op/a I
+	ldc	5
+	if_icmpgt LABEL0
+	ldc 0
+	goto LABEL1
+LABEL0:
+	ldc 1
+LABEL1:
+	ifne LABEL2
+	goto LABEL3
+LABEL2:
+	ldc	4
+	goto LABEL4
+LABEL3:
+	ldc	3
+LABEL4:
+	putstatic	ternary_op/b I
 
 ; === Print statement. ===
 	getstatic	java/lang/System/out Ljava/io/PrintStream;
-	ldc	"--Printing a: a should be 10--"
+	ldc	"--Printing b: b should be 4--"
 	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
 
 ; === Print statement. ===
 	getstatic	java/lang/System/out Ljava/io/PrintStream;
-	iload 2
-	invokevirtual	java/io/PrintStream.println(I)V
-
-; === Print statement. ===
-	getstatic	java/lang/System/out Ljava/io/PrintStream;
-	ldc	"--Printing b: a should be 1--"
-	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
-
-; === Print statement. ===
-	getstatic	java/lang/System/out Ljava/io/PrintStream;
-	getstatic	declaration_sample/b I
+	getstatic	ternary_op/b I
 	invokevirtual	java/io/PrintStream.println(I)V
 
 ; === Emit the main program epilogue. === 
 
 
-	getstatic     declaration_sample/_runTimer LRunTimer;
+	getstatic     ternary_op/_runTimer LRunTimer;
 	invokevirtual RunTimer.printElapsedTime()V
 
 	return
