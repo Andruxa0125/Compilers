@@ -33,12 +33,12 @@ public interface FantasticVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIfStat(FantasticParser.IfStatContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code printStat}
+	 * Visit a parse tree produced by the {@code exprStat}
 	 * labeled alternative in {@link FantasticParser#stat}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPrintStat(FantasticParser.PrintStatContext ctx);
+	T visitExprStat(FantasticParser.ExprStatContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code varDeclStat}
 	 * labeled alternative in {@link FantasticParser#stat}.
@@ -74,6 +74,13 @@ public interface FantasticVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitWhileStat(FantasticParser.WhileStatContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code printStat}
+	 * labeled alternative in {@link FantasticParser#stat}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrintStat(FantasticParser.PrintStatContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code shortAddSub}
 	 * labeled alternative in {@link FantasticParser#stat}.
@@ -128,11 +135,12 @@ public interface FantasticVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIf_statement(FantasticParser.If_statementContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link FantasticParser#return_statement}.
+	 * Visit a parse tree produced by the {@code returnOver}
+	 * labeled alternative in {@link FantasticParser#return_statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitReturn_statement(FantasticParser.Return_statementContext ctx);
+	T visitReturnOver(FantasticParser.ReturnOverContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link FantasticParser#type}.
 	 * @param ctx the parse tree
