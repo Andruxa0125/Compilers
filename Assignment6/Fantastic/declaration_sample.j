@@ -8,13 +8,22 @@
 
 .field private static a I
 
-; stringstr;
-
-.field private static str Ljava/lang/String;
-
 ; intb=1;
 
 .field private static b I
+
+; === Emit the class constructor. === 
+
+
+.method public <init>()V
+
+	aload_0
+	invokenonvirtual    java/lang/Object/<init>()V
+	return
+
+.limit locals 1
+.limit stack 1
+.end method
 
 ; === Emit the main method header. === 
 
@@ -36,9 +45,27 @@
 	ldc	1
 	putstatic	declaration_sample/b I
 	ldc	10
-	putstatic	declaration_sample/a I
-	ldc	"Hello"
-	putstatic	declaration_sample/str Ljava/lang/String;
+	istore 2
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"--Printing a: a should be 10--"
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	iload 2
+	invokevirtual	java/io/PrintStream.println(I)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"--Printing b: a should be 1--"
+	invokevirtual	java/io/PrintStream.println(Ljava/lang/String;)V
+
+; === Print statement. ===
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	getstatic	declaration_sample/b I
+	invokevirtual	java/io/PrintStream.println(I)V
 
 ; === Emit the main program epilogue. === 
 
