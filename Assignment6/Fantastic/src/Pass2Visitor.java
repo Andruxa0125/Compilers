@@ -93,11 +93,27 @@ public class Pass2Visitor extends FantasticBaseVisitor<Integer>
         jFile.println("\n; === Print statement. ===");
         jFile.println("\tgetstatic\tjava/lang/System/out Ljava/io/PrintStream;");
         Integer value = visit(ctx.expr());
-        if (ctx.expr().typeSpec == Predefined.integerType) {
-            jFile.println("\tinvokevirtual\tjava/io/PrintStream.println(I)V");
-        } else {
-            jFile.println("\tinvokevirtual\tjava/io/PrintStream.println(Ljava/lang/String;)V");
-        }
+        String expr = ctx.expr().getText();
+        try {							//check if args is an integer
+			int val = Integer.parseInt(expr);
+			jFile.println("\tinvokevirtual\tjava/io/PrintStream.println(I)V");
+		} catch (NumberFormatException ex) {		//else it is a variable
+			MemoryCell cell = globalMap.peek().get(expr);
+			String type = "S";
+			if(cell != null && cell.isLocal()) {		//its a local variable
+				type = cell.getType();
+			}
+			else if(cell != null && !cell.isLocal()) {
+				cell = globalMap.get(0).get(expr);
+				type = cell.getType();
+			}
+			if(type.equals("I")) {
+				jFile.println("\tinvokevirtual\tjava/io/PrintStream.println(I)V");
+			}
+			else {
+				jFile.println("\tinvokevirtual\tjava/io/PrintStream.println(Ljava/lang/String;)V");
+			}
+		}
         return value;
     }
 
