@@ -20,6 +20,12 @@ public interface FantasticVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitProg(FantasticParser.ProgContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link FantasticParser#local_var_declarations}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLocal_var_declarations(FantasticParser.Local_var_declarationsContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code ifStat}
 	 * labeled alternative in {@link FantasticParser#stat}.
 	 * @param ctx the parse tree
@@ -68,6 +74,20 @@ public interface FantasticVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitWhileStat(FantasticParser.WhileStatContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code shortAddSub}
+	 * labeled alternative in {@link FantasticParser#stat}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitShortAddSub(FantasticParser.ShortAddSubContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code shortAddSubMulDivScalar}
+	 * labeled alternative in {@link FantasticParser#stat}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitShortAddSubMulDivScalar(FantasticParser.ShortAddSubMulDivScalarContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code newLineStat}
 	 * labeled alternative in {@link FantasticParser#stat}.
@@ -138,6 +158,18 @@ public interface FantasticVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitRef_type(FantasticParser.Ref_typeContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link FantasticParser#add_sub_short}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAdd_sub_short(FantasticParser.Add_sub_shortContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link FantasticParser#add_sub_short_scalar}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAdd_sub_short_scalar(FantasticParser.Add_sub_short_scalarContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code CompOpeOver}
 	 * labeled alternative in {@link FantasticParser#expr}.
 	 * @param ctx the parse tree
@@ -180,6 +212,13 @@ public interface FantasticVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAddSubOver(FantasticParser.AddSubOverContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code TernaryOpeOver}
+	 * labeled alternative in {@link FantasticParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTernaryOpeOver(FantasticParser.TernaryOpeOverContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code MulDivPercOver}
 	 * labeled alternative in {@link FantasticParser#expr}.
 	 * @param ctx the parse tree
@@ -218,6 +257,12 @@ public interface FantasticVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitParams(FantasticParser.ParamsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link FantasticParser#parameter}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParameter(FantasticParser.ParameterContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link FantasticParser#args}.
 	 * @param ctx the parse tree

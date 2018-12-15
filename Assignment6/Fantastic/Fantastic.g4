@@ -43,7 +43,6 @@ ref_type : INT_TYPE_REF
          | STRING_TYPE_REF
          ;
 
-
 add_sub_short: variable op=('++'|'--') SEMICOLON;
 add_sub_short_scalar: variable op=('+='|'-='|'*='|'/=') expr SEMICOLON;
 
@@ -104,3 +103,5 @@ STRING_LITERAL : '"'[a-zA-Z0-9]*'"';
 NEWLINE     : '\r'? '\n' ;            // return newlines to parser (is end-statement signal)
 WS          : [ \t]+ -> skip ;        // toss out whitespace
 SEMICOLON   : ';' ;
+COMMENT     : '/*' .*? '*/' -> skip;
+LINE_COMMENT: '//' ~[\r\n]* -> skip;
